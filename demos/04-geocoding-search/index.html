@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Address search with forward geocoding – TMaps API example</title>
+  <meta name="description" content="Search any address in Tunisia and get GPS coordinates, a confidence score and the commune, delegation and governorate with the TMaps Forward Geocoding API. Live JavaScript example with Leaflet.">
+  <link rel="canonical" href="https://examples.tmaps.tn/04-geocoding-search/">
+  <meta property="og:title" content="Address search with forward geocoding – TMaps API example">
+  <meta property="og:description" content="Turn a free-text address in Tunisia into GPS coordinates with the TMaps Forward Geocoding API.">
+  <meta property="og:url" content="https://examples.tmaps.tn/04-geocoding-search/">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="https://storage.googleapis.com/tmaps-public-assets/favico.ico?v0">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Address search with forward geocoding",
+    "description": "Turn a free-text address in Tunisia into GPS coordinates, a confidence score and administrative components with the TMaps Forward Geocoding API.",
+    "url": "https://examples.tmaps.tn/04-geocoding-search/",
+    "inLanguage": "en",
+    "programmingLanguage": "JavaScript",
+    "about": {
+      "@type": "WebAPI",
+      "name": "TMaps Forward Geocoding API",
+      "documentation": "https://www.tmaps.tn/documentation/api/geocoding/forward",
+      "provider": { "@type": "Organization", "name": "TMaps", "url": "https://www.tmaps.tn" }
+    },
+    "isPartOf": { "@type": "WebSite", "name": "TMaps API Examples", "url": "https://examples.tmaps.tn/" }
+  }
+  </script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="../shared/demo.css">
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../shared/config.js"></script>
+  <script src="../shared/demo.js"></script>
+</head>
+<body>
+  <main class="demo">
+    <aside class="panel">
+      <nav class="crumbs"><a href="../">TMaps API examples</a> / 04</nav>
+      <h1>Address search (forward geocoding)</h1>
+      <p class="lead">Type an address, a street or a place in Tunisia. The TMaps Forward Geocoding API returns its GPS coordinates, a confidence score and the commune, delegation and governorate.</p>
+
+      <form class="controls" id="form">
+        <label class="field">Address
+          <input id="q" type="search" value="Avenue Habib Bourguiba, Tunis" autocomplete="off" placeholder="e.g. Rue de Marseille, Tunis">
+        </label>
+        <div class="row">
+          <label class="field">Language
+            <select id="lang"><option value="fr">French</option><option value="en">English</option><option value="ar">Arabic</option></select>
+          </label>
+          <button type="submit">Search</button>
+        </div>
+        <p class="hint">Results update as you type and favour places near the map center.</p>
+      </form>
+
+      <div class="output"><ul class="results" id="results"></ul></div>
+      <div class="error" id="error" role="alert"></div>
+
+      <details class="request" open>
+        <summary>API request</summary>
+        <pre id="request">GET https://api.tmaps.tn/geocoding/forward?q=Avenue+Habib+Bourguiba%2C+Tunis&amp;country=TN&amp;limit=5&amp;api_key=YOUR_API_KEY</pre>
+      </details>
+
+      <section class="about">
+        <h2>How it works</h2>
+        <ol>
+          <li>Each keystroke (debounced by 300 ms) sends <code>GET /geocoding/forward</code> with the text in <code>q</code>.</li>
+          <li><code>country=TN</code> limits results to Tunisia and <code>proximity</code> favours places near the map center.</li>
+          <li>A pending request is cancelled with <code>AbortController</code> when a new one starts, so old results never overwrite new ones.</li>
+          <li>Click a result to place it on the map. Its <code>bbox</code> is used to zoom to the right level.</li>
+        </ol>
+        <h2>Good to know</h2>
+        <ul>
+          <li><code>confidence</code> goes from 0 to 1. For deliveries or e-commerce, only save coordinates when it is at least 0.85 and ask the user to confirm otherwise.</li>
+          <li><code>components</code> gives the Tunisian administrative breakdown: <code>street</code>, <code>postcode</code>, <code>commune</code>, <code>delegation</code>, <code>governorate</code>.</li>
+          <li><code>type</code> filters results: <code>address</code>, <code>street</code>, <code>poi</code> or <code>locality</code>.</li>
+        </ul>
+        <p class="links">
+          <a href="https://www.tmaps.tn/documentation/api/geocoding/forward">Forward Geocoding docs</a> ·
+          <a href="https://github.com/tmaps-tn/tmaps-snippets/tree/main/demos/04-geocoding-search">Source on GitHub</a>
+        </p>
+      </section>
+    </aside>
+    <div id="map"></div>
+  </main>
+
+  <script>
+    const API_KEY = window.TMAPS_API_KEY || 'YOUR_API_KEY';
+
+    const map = L.map('map').setView([36.8002, 10.1815], 12); // Tunis
+    L.tileLayer(`https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=${API_KEY}`, {
+      maxZoom: 18,
+      attribution: '© <a href="https://www.tmaps.tn">TMaps</a>',
+    }).addTo(map);
+
+    const input = document.getElementById('q');
+    const list = document.getElementById('results');
+    const marker = L.marker([0, 0], { icon: demo.pin() });
+    let timer;
+    let controller;
+
+    input.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(search, 300);
+    });
+    document.getElementById('lang').addEventListener('change', search);
+    document.getElementById('form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      clearTimeout(timer);
+      search();
+    });
+
+    async function search() {
+      const q = input.value.trim();
+      if (q.length < 3) return;
+
+      const center = map.getCenter();
+      const url = new URL('https://api.tmaps.tn/geocoding/forward');
+      url.search = new URLSearchParams({
+        q,
+        country: 'TN',
+        limit: 5,
+        lang: document.getElementById('lang').value,
+        proximity: `${center.lat.toFixed(5)},${center.lng.toFixed(5)}`,
+        api_key: API_KEY,
+      });
+
+      controller?.abort();
+      controller = new AbortController();
+      demo.showRequest('GET', url);
+      demo.clearError();
+
+      try {
+        const res = await fetch(url, { signal: controller.signal });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(`${res.status} – ${data.error ?? res.statusText}`);
+        render(data.results);
+      } catch (error) {
+        if (error.name !== 'AbortError') demo.showError(error);
+      }
+    }
+
+    function render(results) {
+      list.innerHTML = '';
+      if (!results.length) {
+        list.innerHTML = '<li>No result.</li>';
+        return;
+      }
+      results.forEach((result, index) => {
+        const { commune, delegation, governorate } = result.components ?? {};
+        const li = document.createElement('li');
+        li.className = 'clickable';
+        li.innerHTML = `
+          ${demo.escape(result.formatted)}<br>
+          <small>${demo.escape(result.type)} · confidence ${Math.round(result.confidence * 100)}%
+          · ${[commune, delegation, governorate].filter(Boolean).map(demo.escape).join(', ')}</small>`;
+        li.addEventListener('click', () => select(result, li));
+        list.append(li);
+        if (index === 0) select(result, li);
+      });
+    }
+
+    function select(result, li) {
+      list.querySelectorAll('li').forEach((item) => item.classList.toggle('active', item === li));
+      marker.setLatLng([result.lat, result.lng])
+        .bindPopup(`<b>${demo.escape(result.formatted)}</b><br>${result.lat.toFixed(5)}, ${result.lng.toFixed(5)}`)
+        .addTo(map)
+        .openPopup();
+      if (result.bbox) {
+        const [minLng, minLat, maxLng, maxLat] = result.bbox;
+        map.fitBounds([[minLat, minLng], [maxLat, maxLng]], { maxZoom: 17 });
+      } else {
+        map.setView([result.lat, result.lng], 16);
+      }
+    }
+
+    search();
+  </script>
+</body>
+</html>

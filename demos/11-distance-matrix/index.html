@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Find the nearest driver with a distance matrix – TMaps API example</title>
+  <meta name="description" content="Compare real travel times from several drivers to a customer in Tunisia and dispatch the nearest one with the TMaps Distance Matrix API. Live JavaScript example with Leaflet.">
+  <link rel="canonical" href="https://examples.tmaps.tn/11-distance-matrix/">
+  <meta property="og:title" content="Find the nearest driver – TMaps API example">
+  <meta property="og:description" content="Travel times from several drivers to a customer with the TMaps Distance Matrix API.">
+  <meta property="og:url" content="https://examples.tmaps.tn/11-distance-matrix/">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="https://storage.googleapis.com/tmaps-public-assets/favico.ico?v0">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Find the nearest driver with a distance matrix",
+    "description": "Compare real travel times from several drivers to a customer in Tunisia and dispatch the nearest one with the TMaps Distance Matrix API.",
+    "url": "https://examples.tmaps.tn/11-distance-matrix/",
+    "inLanguage": "en",
+    "programmingLanguage": "JavaScript",
+    "about": {
+      "@type": "WebAPI",
+      "name": "TMaps Distance Matrix API",
+      "documentation": "https://www.tmaps.tn/documentation/api/distance-matrix",
+      "provider": { "@type": "Organization", "name": "TMaps", "url": "https://www.tmaps.tn" }
+    },
+    "isPartOf": { "@type": "WebSite", "name": "TMaps API Examples", "url": "https://examples.tmaps.tn/" }
+  }
+  </script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="../shared/demo.css">
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../shared/config.js"></script>
+  <script src="../shared/demo.js"></script>
+</head>
+<body>
+  <main class="demo">
+    <aside class="panel">
+      <nav class="crumbs"><a href="../">TMaps API examples</a> / 11</nav>
+      <h1>Nearest driver with a distance matrix</h1>
+      <p class="lead">A new order comes in: which driver can reach the customer first? The TMaps Distance Matrix API returns the real road travel time from every driver to the customer in a single call. Click the map to move the customer.</p>
+
+      <div class="controls">
+        <label class="field">Profile
+          <select id="profile"><option value="driving">Driving</option><option value="cycling">Cycling (scooter)</option><option value="walking">Walking</option></select>
+        </label>
+        <p class="hint">Click the map or drag the customer marker.</p>
+      </div>
+
+      <div class="output" id="output"></div>
+      <div class="error" id="error" role="alert"></div>
+
+      <details class="request" open>
+        <summary>API request</summary>
+        <pre id="request">POST https://api.tmaps.tn/distance-matrix?api_key=YOUR_API_KEY</pre>
+      </details>
+
+      <section class="about">
+        <h2>How it works</h2>
+        <ol>
+          <li>The page sends <code>POST /distance-matrix</code> with the drivers as <code>origins</code> and the customer as the only <code>destinations</code> entry.</li>
+          <li><code>durations[i][j]</code> is the time in seconds from <code>origins[i]</code> to <code>destinations[j]</code>, and <code>distances[i][j]</code> the distance in meters.</li>
+          <li>The driver with the smallest <code>durations[i][0]</code> gets the order.</li>
+        </ol>
+        <h2>Good to know</h2>
+        <ul>
+          <li>Up to 25 origins × 25 destinations (625 pairs) per request. Split larger matrices into batches.</li>
+          <li>The nearest driver as the crow flies is often not the fastest one: one-way streets and road layout change the ranking.</li>
+          <li>Set <code>metrics</code> to <code>["duration"]</code> if you do not need distances.</li>
+        </ul>
+        <p class="links">
+          <a href="https://www.tmaps.tn/documentation/api/distance-matrix">Distance Matrix docs</a> ·
+          <a href="https://github.com/tmaps-tn/tmaps-snippets/tree/main/demos/11-distance-matrix">Source on GitHub</a>
+        </p>
+      </section>
+    </aside>
+    <div id="map"></div>
+  </main>
+
+  <script>
+    const API_KEY = window.TMAPS_API_KEY || 'YOUR_API_KEY';
+    const DRIVERS = [
+      { name: 'Driver 1', lat: 36.8280, lng: 10.2100 },
+      { name: 'Driver 2', lat: 36.8450, lng: 10.1850 },
+      { name: 'Driver 3', lat: 36.8094, lng: 10.1400 },
+      { name: 'Driver 4', lat: 36.7860, lng: 10.1950 },
+      { name: 'Driver 5', lat: 36.8600, lng: 10.2350 },
+    ];
+
+    const map = L.map('map').setView([36.825, 10.19], 13);
+    L.tileLayer(`https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=${API_KEY}`, {
+      maxZoom: 18,
+      attribution: '© <a href="https://www.tmaps.tn">TMaps</a>',
+    }).addTo(map);
+
+    const driverMarkers = DRIVERS.map((driver, i) =>
+      L.marker(driver, { icon: demo.pin(i + 1, '#5b6178') }).bindTooltip(driver.name).addTo(map));
+    const customer = L.marker([36.8000, 10.1815], { icon: demo.pin('C', '#d92d20'), draggable: true })
+      .bindTooltip('Customer').addTo(map);
+    const link = L.polyline([], { color: '#2e47f0', weight: 3, dashArray: '6 6' }).addTo(map);
+
+    customer.on('dragend', match);
+    map.on('click', (event) => { customer.setLatLng(event.latlng); match(); });
+    document.getElementById('profile').addEventListener('change', match);
+
+    async function match() {
+      const c = customer.getLatLng();
+      const body = {
+        origins: DRIVERS.map(({ lat, lng }) => ({ lat, lng })),
+        destinations: [{ lat: +c.lat.toFixed(6), lng: +c.lng.toFixed(6) }],
+        profile: document.getElementById('profile').value,
+      };
+      const url = new URL('https://api.tmaps.tn/distance-matrix');
+      url.searchParams.set('api_key', API_KEY);
+
+      demo.showRequest('POST', url, body);
+      demo.clearError();
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 404) throw new Error('A point is outside the coverage area.');
+        if (!res.ok) throw new Error(`${res.status} – ${data.error ?? res.statusText}`);
+        render(data);
+      } catch (error) {
+        link.setLatLngs([]);
+        document.getElementById('output').innerHTML = '';
+        demo.showError(error);
+      }
+    }
+
+    function render(data) {
+      // Une seule destination : on lit la première colonne de la matrice
+      const ranking = DRIVERS
+        .map((driver, i) => ({ ...driver, index: i, duration: data.durations[i][0], distance: data.distances?.[i][0] }))
+        .filter((driver) => driver.duration != null)
+        .sort((a, b) => a.duration - b.duration);
+      const best = ranking[0];
+
+      driverMarkers.forEach((marker, i) => marker.setIcon(demo.pin(i + 1, i === best?.index ? '#2e47f0' : '#5b6178')));
+      link.setLatLngs(best ? [best, customer.getLatLng()] : []);
+
+      document.getElementById('output').innerHTML = `
+        <table>
+          <tr><th>Driver</th><th>Time</th><th>Distance</th></tr>
+          ${ranking.map((driver) => `
+            <tr class="${driver === best ? 'best' : ''}">
+              <td>${driver.name}</td><td>${demo.formatDuration(driver.duration)}</td>
+              <td>${driver.distance != null ? demo.formatDistance(driver.distance) : '–'}</td>
+            </tr>`).join('')}
+        </table>`;
+    }
+
+    match();
+  </script>
+</body>
+</html>

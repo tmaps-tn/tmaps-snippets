@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Static map image for emails and PDFs – TMaps API example</title>
+  <meta name="description" content="Generate a PNG map image of Tunisia with markers for emails, PDF reports or listing thumbnails with the TMaps Static Maps API. Live example that builds the image URL.">
+  <link rel="canonical" href="https://examples.tmaps.tn/06-static-map/">
+  <meta property="og:title" content="Static map image for emails and PDFs – TMaps API example">
+  <meta property="og:description" content="Generate a PNG map image with markers with the TMaps Static Maps API.">
+  <meta property="og:url" content="https://examples.tmaps.tn/06-static-map/">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="https://storage.googleapis.com/tmaps-public-assets/favico.ico?v0">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Static map image for emails and PDFs",
+    "description": "Generate a PNG map image with markers for emails, PDF reports or listing thumbnails with the TMaps Static Maps API.",
+    "url": "https://examples.tmaps.tn/06-static-map/",
+    "inLanguage": "en",
+    "programmingLanguage": "JavaScript",
+    "about": {
+      "@type": "WebAPI",
+      "name": "TMaps Static Maps API",
+      "documentation": "https://www.tmaps.tn/documentation/api/static-maps",
+      "provider": { "@type": "Organization", "name": "TMaps", "url": "https://www.tmaps.tn" }
+    },
+    "isPartOf": { "@type": "WebSite", "name": "TMaps API Examples", "url": "https://examples.tmaps.tn/" }
+  }
+  </script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="../shared/demo.css">
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../shared/config.js"></script>
+  <script src="../shared/demo.js"></script>
+  <style>
+    #preview { display: block; width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <main class="demo">
+    <aside class="panel">
+      <nav class="crumbs"><a href="../">TMaps API examples</a> / 06</nav>
+      <h1>Static map image</h1>
+      <p class="lead">Generate a PNG image of a map with markers, ready for emails, PDF reports or listing thumbnails. Pan the interactive map to choose the area, click to move the marker, then generate the image with the TMaps Static Maps API.</p>
+
+      <form class="controls" id="form">
+        <div class="row">
+          <label class="field">Style
+            <select id="style"><option>streets</option><option>dark</option><option>terrain</option><option>sunny</option></select>
+          </label>
+          <label class="field">Size
+            <select id="size"><option>600x400</option><option selected>800x500</option><option>1280x720</option></select>
+          </label>
+        </div>
+        <div class="row">
+          <label class="field">Marker color
+            <select id="color"><option>red</option><option>blue</option><option>green</option><option>orange</option><option>purple</option></select>
+          </label>
+          <label class="field">Label
+            <input id="label" value="A" maxlength="1">
+          </label>
+        </div>
+        <button type="submit">Generate image</button>
+      </form>
+
+      <div class="output" id="output"></div>
+      <div class="error" id="error" role="alert"></div>
+
+      <details class="request" open>
+        <summary>API request</summary>
+        <pre id="request">GET https://api.tmaps.tn/maps/static?center=36.8528,10.3261&amp;zoom=15&amp;size=800x500&amp;style=streets&amp;marker=36.8528,10.3261|red|A&amp;api_key=YOUR_API_KEY</pre>
+      </details>
+
+      <section class="about">
+        <h2>How it works</h2>
+        <ol>
+          <li>The image is a plain URL: <code>GET /maps/static</code> with <code>center</code>, <code>zoom</code> and <code>size</code>.</li>
+          <li>Each <code>marker</code> parameter adds a pin, written <code>lat,lng|color|label</code>. Repeat the parameter for several markers (up to 20).</li>
+          <li>Put the URL in an <code>&lt;img&gt;</code> tag, an email template or a PDF generator.</li>
+        </ol>
+        <h2>Good to know</h2>
+        <ul>
+          <li>Maximum size is 1280 × 1280 pixels. Only PNG is supported for now.</li>
+          <li>Use <code>bbox</code> instead of <code>center</code> + <code>zoom</code> to fit an area automatically.</li>
+          <li>Draw a route with <code>path=weight:5|color:0x0066ff|enc:…</code> using the encoded polyline returned by the Directions API.</li>
+          <li>The URL fully describes the image, so cache it on your CDN to avoid generating it twice.</li>
+        </ul>
+        <p class="links">
+          <a href="https://www.tmaps.tn/documentation/api/static-maps">Static Maps docs</a> ·
+          <a href="https://github.com/tmaps-tn/tmaps-snippets/tree/main/demos/06-static-map">Source on GitHub</a>
+        </p>
+      </section>
+    </aside>
+    <div id="map"></div>
+  </main>
+
+  <script>
+    const API_KEY = window.TMAPS_API_KEY || 'YOUR_API_KEY';
+
+    const map = L.map('map').setView([36.8528, 10.3261], 15); // Carthage
+    L.tileLayer(`https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=${API_KEY}`, {
+      maxZoom: 18,
+      attribution: '© <a href="https://www.tmaps.tn">TMaps</a>',
+    }).addTo(map);
+
+    const marker = L.marker(map.getCenter(), { icon: demo.pin('A', '#d92d20') }).addTo(map);
+    map.on('click', (event) => marker.setLatLng(event.latlng));
+
+    document.getElementById('form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      generate();
+    });
+
+    function generate() {
+      const center = map.getCenter();
+      const pin = marker.getLatLng();
+      const label = document.getElementById('label').value.trim().toUpperCase();
+
+      const url = new URL('https://api.tmaps.tn/maps/static');
+      url.searchParams.set('center', `${center.lat.toFixed(5)},${center.lng.toFixed(5)}`);
+      url.searchParams.set('zoom', map.getZoom());
+      url.searchParams.set('size', document.getElementById('size').value);
+      url.searchParams.set('style', document.getElementById('style').value);
+      url.searchParams.append('marker', `${pin.lat.toFixed(5)},${pin.lng.toFixed(5)}|${document.getElementById('color').value}|${label}`);
+      url.searchParams.set('api_key', API_KEY);
+
+      demo.showRequest('GET', url);
+      demo.clearError();
+
+      const img = new Image();
+      img.id = 'preview';
+      img.alt = 'Static map generated by the TMaps Static Maps API';
+      img.onload = () => document.getElementById('output').replaceChildren(img);
+      img.onerror = () => demo.showError(new Error('The image could not be loaded. Check your API key and its authorized domains.'));
+      img.src = url;
+    }
+
+    generate();
+  </script>
+</body>
+</html>

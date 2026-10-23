@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Get an address from a map click (reverse geocoding) – TMaps API example</title>
+  <meta name="description" content="Click anywhere on a map of Tunisia to get the postal address, commune, delegation and governorate with the TMaps Reverse Geocoding API. Live JavaScript example with Leaflet.">
+  <link rel="canonical" href="https://examples.tmaps.tn/05-reverse-geocoding/">
+  <meta property="og:title" content="Get an address from a map click – TMaps API example">
+  <meta property="og:description" content="Turn GPS coordinates in Tunisia into a postal address with the TMaps Reverse Geocoding API.">
+  <meta property="og:url" content="https://examples.tmaps.tn/05-reverse-geocoding/">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="https://storage.googleapis.com/tmaps-public-assets/favico.ico?v0">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Get an address from a map click (reverse geocoding)",
+    "description": "Turn GPS coordinates in Tunisia into a postal address and administrative components with the TMaps Reverse Geocoding API.",
+    "url": "https://examples.tmaps.tn/05-reverse-geocoding/",
+    "inLanguage": "en",
+    "programmingLanguage": "JavaScript",
+    "about": {
+      "@type": "WebAPI",
+      "name": "TMaps Reverse Geocoding API",
+      "documentation": "https://www.tmaps.tn/documentation/api/geocoding/reverse",
+      "provider": { "@type": "Organization", "name": "TMaps", "url": "https://www.tmaps.tn" }
+    },
+    "isPartOf": { "@type": "WebSite", "name": "TMaps API Examples", "url": "https://examples.tmaps.tn/" }
+  }
+  </script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="../shared/demo.css">
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../shared/config.js"></script>
+  <script src="../shared/demo.js"></script>
+</head>
+<body>
+  <main class="demo">
+    <aside class="panel">
+      <nav class="crumbs"><a href="../">TMaps API examples</a> / 05</nav>
+      <h1>Address from a map click (reverse geocoding)</h1>
+      <p class="lead">Click anywhere on the map. The TMaps Reverse Geocoding API turns the GPS coordinates into a postal address with its commune, delegation and governorate.</p>
+
+      <div class="controls">
+        <label class="field">Language
+          <select id="lang"><option value="fr">French</option><option value="en">English</option><option value="ar">Arabic</option></select>
+        </label>
+        <p class="hint">Click the map to look up an address.</p>
+      </div>
+
+      <div class="output" id="output"></div>
+      <div class="error" id="error" role="alert"></div>
+
+      <details class="request" open>
+        <summary>API request</summary>
+        <pre id="request">GET https://api.tmaps.tn/geocoding/reverse?lat=36.8002&amp;lng=10.1815&amp;lang=fr&amp;api_key=YOUR_API_KEY</pre>
+      </details>
+
+      <section class="about">
+        <h2>How it works</h2>
+        <ol>
+          <li>A click on the map gives a latitude and longitude.</li>
+          <li>The page sends <code>GET /geocoding/reverse</code> with <code>lat</code>, <code>lng</code> and <code>lang</code>.</li>
+          <li>The API snaps to the nearest relevant street or building and returns its address. <code>distance</code> tells you how far it is, in meters, from the clicked point.</li>
+        </ol>
+        <h2>Good to know</h2>
+        <ul>
+          <li>Use <code>type=locality</code> when you only need the commune, for example to tag a GPS log.</li>
+          <li>A <code>404</code> means no address was found near the point (sea, desert).</li>
+          <li>Typical uses: showing the address of the user's GPS position, enriching field inspection points, labelling raw coordinates in logs.</li>
+        </ul>
+        <p class="links">
+          <a href="https://www.tmaps.tn/documentation/api/geocoding/reverse">Reverse Geocoding docs</a> ·
+          <a href="https://github.com/tmaps-tn/tmaps-snippets/tree/main/demos/05-reverse-geocoding">Source on GitHub</a>
+        </p>
+      </section>
+    </aside>
+    <div id="map"></div>
+  </main>
+
+  <script>
+    const API_KEY = window.TMAPS_API_KEY || 'YOUR_API_KEY';
+
+    const map = L.map('map').setView([36.8002, 10.1815], 15); // Tunis
+    L.tileLayer(`https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=${API_KEY}`, {
+      maxZoom: 18,
+      attribution: '© <a href="https://www.tmaps.tn">TMaps</a>',
+    }).addTo(map);
+
+    const clicked = L.circleMarker([0, 0], { radius: 5, color: '#5b6178' });
+    const found = L.marker([0, 0], { icon: demo.pin() });
+    let last = { lat: 36.8002, lng: 10.1815 };
+
+    map.on('click', (event) => lookup(event.latlng));
+    document.getElementById('lang').addEventListener('change', () => lookup(last));
+
+    async function lookup({ lat, lng }) {
+      last = { lat, lng };
+      clicked.setLatLng([lat, lng]).addTo(map);
+
+      const url = new URL('https://api.tmaps.tn/geocoding/reverse');
+      url.search = new URLSearchParams({
+        lat: lat.toFixed(6),
+        lng: lng.toFixed(6),
+        lang: document.getElementById('lang').value,
+        api_key: API_KEY,
+      });
+      demo.showRequest('GET', url);
+      demo.clearError();
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 404) throw new Error('No address found near this point.');
+        if (!res.ok) throw new Error(`${res.status} – ${data.error ?? res.statusText}`);
+        render(data.results[0]);
+      } catch (error) {
+        document.getElementById('output').innerHTML = '';
+        found.remove();
+        demo.showError(error);
+      }
+    }
+
+    function render(result) {
+      const c = result.components ?? {};
+      found.setLatLng([result.lat, result.lng])
+        .bindPopup(`<b>${demo.escape(result.formatted)}</b>`)
+        .addTo(map)
+        .openPopup();
+
+      const rows = [
+        ['Street', c.street], ['Postcode', c.postcode], ['Commune', c.commune],
+        ['Delegation', c.delegation], ['Governorate', c.governorate], ['Type', result.type],
+        ['Snapped', demo.formatDistance(result.distance ?? 0)],
+        ['Coordinates', `${result.lat.toFixed(5)}, ${result.lng.toFixed(5)}`],
+      ];
+      document.getElementById('output').innerHTML = `
+        <p><b>${demo.escape(result.formatted)}</b></p>
+        <table>${rows.filter(([, v]) => v).map(([k, v]) => `<tr><th>${k}</th><td>${demo.escape(v)}</td></tr>`).join('')}</table>`;
+    }
+
+    lookup(last);
+  </script>
+</body>
+</html>

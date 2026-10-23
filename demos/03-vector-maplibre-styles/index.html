@@ -1,43 +1,96 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tuiles vectorielles TMaps avec MapLibre GL</title>
-  <meta name="description" content="Carte vectorielle MapLibre GL avec les 4 styles TMaps (streets, dark, terrain, sunny) et changement de style à chaud.">
+  <title>Vector map styles (streets, dark, terrain, sunny) with MapLibre GL – TMaps API example</title>
+  <meta name="description" content="Vector map of Tunisia in MapLibre GL JS with the four TMaps styles (streets, dark, terrain, sunny) and live style switching with setStyle. Copy-paste JavaScript example.">
   <link rel="canonical" href="https://examples.tmaps.tn/03-vector-maplibre-styles/">
-  <meta property="og:title" content="Tuiles vectorielles TMaps avec MapLibre GL">
-  <meta property="og:description" content="Les 4 styles vectoriels TMaps (streets, dark, terrain, sunny) avec MapLibre GL.">
+  <meta property="og:title" content="Vector map styles with MapLibre GL – TMaps API example">
+  <meta property="og:description" content="The four TMaps vector styles (streets, dark, terrain, sunny) in MapLibre GL JS.">
   <meta property="og:url" content="https://examples.tmaps.tn/03-vector-maplibre-styles/">
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary">
   <link rel="icon" href="https://storage.googleapis.com/tmaps-public-assets/favico.ico?v0">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Vector map styles with MapLibre GL",
+    "description": "Vector map of Tunisia in MapLibre GL JS with the four TMaps styles and live style switching.",
+    "url": "https://examples.tmaps.tn/03-vector-maplibre-styles/",
+    "inLanguage": "en",
+    "programmingLanguage": "JavaScript",
+    "about": {
+      "@type": "WebAPI",
+      "name": "TMaps Vector Tiles API",
+      "documentation": "https://www.tmaps.tn/documentation/api/vector-tiles",
+      "provider": { "@type": "Organization", "name": "TMaps", "url": "https://www.tmaps.tn" }
+    },
+    "isPartOf": { "@type": "WebSite", "name": "TMaps API Examples", "url": "https://examples.tmaps.tn/" }
+  }
+  </script>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.6.0/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="../shared/demo.css">
   <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
   <script src="../shared/config.js"></script>
-
+  <script src="../shared/demo.js"></script>
   <style>
-    html, body, #map { height: 100%; margin: 0; }
-    .styles {
-      position: absolute; top: 12px; left: 12px; z-index: 1; display: flex; gap: 4px;
-      padding: 4px; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(0, 25, 75, .15);
-      font: 14px system-ui, sans-serif;
-    }
-    .styles button {
-      border: 0; border-radius: 6px; padding: 6px 12px; background: none; cursor: pointer; font: inherit;
-    }
-    .styles button[aria-pressed="true"] { background: #2e47f0; color: #fff; }
-    .notice {
-      position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); z-index: 1;
-      padding: 8px 14px; border-radius: 8px; background: #b42318; color: #fff;
-      font: 14px/1.4 system-ui, sans-serif; display: none;
-    }
+    .styles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .styles button { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .styles button[aria-pressed="true"] { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
   </style>
 </head>
 <body>
-  <div id="map"></div>
-  <div class="styles" id="styles"></div>
-  <div class="notice" id="notice"></div>
+  <main class="demo">
+    <aside class="panel">
+      <nav class="crumbs"><a href="../">TMaps API examples</a> / 03</nav>
+      <h1>Vector map styles with MapLibre GL</h1>
+      <p class="lead">TMaps vector tiles rendered by MapLibre GL JS: sharp on every screen, smooth zoom and rotation. Four styles are available and can be switched without reloading the map.</p>
+
+      <div class="controls">
+        <div class="field">Style
+          <div class="styles" id="styles"></div>
+        </div>
+      </div>
+
+      <div class="error" id="error" role="alert"></div>
+
+      <details class="request" open>
+        <summary>Style URL</summary>
+        <pre id="request">https://tiles.tmaps.tn/v-tile/streets.json?api_key=YOUR_API_KEY</pre>
+      </details>
+
+      <section class="about">
+        <h2>How it works</h2>
+        <ol>
+          <li>Each style is a JSON file following the Mapbox Style Specification: <code>https://tiles.tmaps.tn/v-tile/{style}.json</code>.</li>
+          <li>MapLibre reads the tile sources, fonts and icons from that file. You don't call the <code>.pbf</code> tiles yourself.</li>
+          <li><code>map.setStyle(url)</code> switches the style without destroying the map, which makes a dark mode toggle easy.</li>
+        </ol>
+        <h2>Available styles</h2>
+        <ul>
+          <li><code>streets</code>: light reference map, built for reading streets and points of interest.</li>
+          <li><code>dark</code>: dark variant for dashboards and night mode.</li>
+          <li><code>terrain</code>: highlights relief, rivers and topography.</li>
+          <li><code>sunny</code>: warm palette for tourism and retail.</li>
+        </ul>
+        <h2>The code</h2>
+        <pre>const map = new maplibregl.Map({
+  container: 'map',
+  style: 'https://tiles.tmaps.tn/v-tile/streets.json?api_key=YOUR_API_KEY',
+  center: [10.1815, 36.8002],
+  zoom: 12,
+});</pre>
+        <p class="links">
+          <a href="https://www.tmaps.tn/documentation/api/vector-tiles">Vector tiles docs</a> ·
+          <a href="https://github.com/tmaps-tn/tmaps-snippets/tree/main/demos/03-vector-maplibre-styles">Source on GitHub</a>
+        </p>
+      </section>
+    </aside>
+    <div id="map"></div>
+  </main>
 
   <script>
     const API_KEY = window.TMAPS_API_KEY || 'YOUR_API_KEY';
@@ -52,25 +105,21 @@
       maxZoom: 18,
     });
     map.addControl(new maplibregl.NavigationControl(), 'top-right');
-    map.on('error', () => showNotice('Style indisponible : vérifiez votre clé API et vos domaines autorisés.'));
+    map.on('error', () => demo.showError(new Error('The style could not be loaded. Check your API key and its authorized domains.')));
 
     // Un bouton par style ; setStyle() change le style sans recréer la carte
     const bar = document.getElementById('styles');
     for (const name of STYLES) {
       const button = document.createElement('button');
+      button.type = 'button';
       button.textContent = name;
       button.setAttribute('aria-pressed', name === 'streets');
       button.addEventListener('click', () => {
         map.setStyle(styleUrl(name));
+        document.getElementById('request').textContent = styleUrl(name).replace(/api_key=.*/, 'api_key=YOUR_API_KEY');
         bar.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', b === button));
       });
       bar.append(button);
-    }
-
-    function showNotice(message) {
-      const el = document.getElementById('notice');
-      el.textContent = message;
-      el.style.display = 'block';
     }
   </script>
 </body>

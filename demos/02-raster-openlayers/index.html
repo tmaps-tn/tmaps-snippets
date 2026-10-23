@@ -1,33 +1,82 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Carte OpenLayers avec les tuiles raster TMaps</title>
-  <meta name="description" content="Afficher une carte de la Tunisie avec OpenLayers et les tuiles raster XYZ TMaps, avec position conservée dans l'URL.">
+  <title>Map of Tunisia with OpenLayers and XYZ tiles – TMaps API example</title>
+  <meta name="description" content="Display a map of Tunisia in OpenLayers with TMaps raster XYZ tiles, and keep the current view in the URL so it can be shared. Copy-paste JavaScript example.">
   <link rel="canonical" href="https://examples.tmaps.tn/02-raster-openlayers/">
-  <meta property="og:title" content="Carte OpenLayers avec les tuiles raster TMaps">
-  <meta property="og:description" content="Afficher une carte de la Tunisie avec OpenLayers et les tuiles raster XYZ TMaps.">
+  <meta property="og:title" content="Map of Tunisia with OpenLayers – TMaps API example">
+  <meta property="og:description" content="Map of Tunisia in OpenLayers with TMaps raster XYZ tiles.">
   <meta property="og:url" content="https://examples.tmaps.tn/02-raster-openlayers/">
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary">
   <link rel="icon" href="https://storage.googleapis.com/tmaps-public-assets/favico.ico?v0">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Map of Tunisia with OpenLayers and XYZ tiles",
+    "description": "Display a map of Tunisia in OpenLayers with TMaps raster XYZ tiles and a shareable view in the URL.",
+    "url": "https://examples.tmaps.tn/02-raster-openlayers/",
+    "inLanguage": "en",
+    "programmingLanguage": "JavaScript",
+    "about": {
+      "@type": "WebAPI",
+      "name": "TMaps Raster Tiles API",
+      "documentation": "https://www.tmaps.tn/documentation/api/raster-tiles",
+      "provider": { "@type": "Organization", "name": "TMaps", "url": "https://www.tmaps.tn" }
+    },
+    "isPartOf": { "@type": "WebSite", "name": "TMaps API Examples", "url": "https://examples.tmaps.tn/" }
+  }
+  </script>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.4.0/ol.css">
+  <link rel="stylesheet" href="../shared/demo.css">
   <script src="https://cdn.jsdelivr.net/npm/ol@10.4.0/dist/ol.js"></script>
   <script src="../shared/config.js"></script>
-
-  <style>
-    html, body, #map { height: 100%; margin: 0; }
-    .notice {
-      position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 1000;
-      padding: 8px 14px; border-radius: 8px; background: #b42318; color: #fff;
-      font: 14px/1.4 system-ui, sans-serif; display: none;
-    }
-  </style>
+  <script src="../shared/demo.js"></script>
 </head>
 <body>
-  <div id="map"></div>
-  <div class="notice" id="notice"></div>
+  <main class="demo">
+    <aside class="panel">
+      <nav class="crumbs"><a href="../">TMaps API examples</a> / 02</nav>
+      <h1>Map of Tunisia with OpenLayers</h1>
+      <p class="lead">TMaps raster tiles in OpenLayers with an XYZ source. The current view (zoom, latitude, longitude) is kept in the URL, so you can share a link to the exact same place.</p>
+
+      <div class="error" id="error" role="alert"></div>
+
+      <details class="request" open>
+        <summary>Current view</summary>
+        <pre id="request">#12,36.800200,10.181500</pre>
+      </details>
+
+      <section class="about">
+        <h2>How it works</h2>
+        <ol>
+          <li>An <code>ol.source.XYZ</code> source loads the TMaps tiles from <code>https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=…</code>.</li>
+          <li>The view is created with <code>ol.proj.fromLonLat</code>, because OpenLayers uses Web Mercator (EPSG:3857) by default.</li>
+          <li>On every <code>moveend</code>, the page writes <code>#zoom,lat,lng</code> in the URL with <code>history.replaceState</code>, and reads it back on load.</li>
+        </ol>
+        <h2>The code</h2>
+        <pre>new ol.Map({
+  target: 'map',
+  layers: [new ol.layer.Tile({
+    source: new ol.source.XYZ({
+      url: 'https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=YOUR_API_KEY',
+      maxZoom: 18,
+    }),
+  })],
+  view: new ol.View({ center: ol.proj.fromLonLat([10.1815, 36.8002]), zoom: 12 }),
+});</pre>
+        <p class="links">
+          <a href="https://www.tmaps.tn/documentation/api/raster-tiles">Raster tiles docs</a> ·
+          <a href="https://github.com/tmaps-tn/tmaps-snippets/tree/main/demos/02-raster-openlayers">Source on GitHub</a>
+        </p>
+      </section>
+    </aside>
+    <div id="map"></div>
+  </main>
 
   <script>
     const API_KEY = window.TMAPS_API_KEY || 'YOUR_API_KEY';
@@ -40,7 +89,7 @@
       maxZoom: 18,
       attributions: '© <a href="https://www.tmaps.tn">TMaps</a>',
     });
-    source.on('tileloaderror', () => showNotice('Tuiles indisponibles : vérifiez votre clé API et vos domaines autorisés.'));
+    source.once('tileloaderror', () => demo.showError(new Error('Tiles could not be loaded. Check your API key and its authorized domains.')));
 
     const map = new ol.Map({
       target: 'map',
@@ -52,14 +101,10 @@
     map.on('moveend', () => {
       const view = map.getView();
       const [lon, la] = ol.proj.toLonLat(view.getCenter());
-      history.replaceState(null, '', `#${view.getZoom().toFixed(2)},${la.toFixed(6)},${lon.toFixed(6)}`);
+      const hash = `#${view.getZoom().toFixed(2)},${la.toFixed(6)},${lon.toFixed(6)}`;
+      history.replaceState(null, '', hash);
+      document.getElementById('request').textContent = hash;
     });
-
-    function showNotice(message) {
-      const el = document.getElementById('notice');
-      el.textContent = message;
-      el.style.display = 'block';
-    }
   </script>
 </body>
 </html>

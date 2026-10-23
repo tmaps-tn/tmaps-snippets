@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout address form with autocomplete and map pin – TMaps API example</title>
+  <meta name="description" content="E-commerce delivery address form for Tunisia: address autocomplete, auto-filled commune, delegation, governorate and postcode, and a draggable map pin to confirm the exact location. Built with the TMaps Geocoding APIs.">
+  <link rel="canonical" href="https://examples.tmaps.tn/12-checkout-address-form/">
+  <meta property="og:title" content="Checkout address form with autocomplete – TMaps API example">
+  <meta property="og:description" content="Delivery address form for Tunisia with autocomplete and a map pin, built with the TMaps Geocoding APIs.">
+  <meta property="og:url" content="https://examples.tmaps.tn/12-checkout-address-form/">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="https://storage.googleapis.com/tmaps-public-assets/favico.ico?v0">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Checkout address form with autocomplete and map pin",
+    "description": "E-commerce delivery address form for Tunisia with address autocomplete, auto-filled administrative fields and a draggable map pin, using the TMaps Forward and Reverse Geocoding APIs.",
+    "url": "https://examples.tmaps.tn/12-checkout-address-form/",
+    "inLanguage": "en",
+    "programmingLanguage": "JavaScript",
+    "about": [
+      {
+        "@type": "WebAPI",
+        "name": "TMaps Forward Geocoding API",
+        "documentation": "https://www.tmaps.tn/documentation/api/geocoding/forward",
+        "provider": { "@type": "Organization", "name": "TMaps", "url": "https://www.tmaps.tn" }
+      },
+      {
+        "@type": "WebAPI",
+        "name": "TMaps Reverse Geocoding API",
+        "documentation": "https://www.tmaps.tn/documentation/api/geocoding/reverse",
+        "provider": { "@type": "Organization", "name": "TMaps", "url": "https://www.tmaps.tn" }
+      }
+    ],
+    "isPartOf": { "@type": "WebSite", "name": "TMaps API Examples", "url": "https://examples.tmaps.tn/" }
+  }
+  </script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="../shared/demo.css">
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../shared/config.js"></script>
+  <script src="../shared/demo.js"></script>
+  <style>
+    .autocomplete { position: relative; }
+    #suggestions { position: absolute; z-index: 1000; left: 0; right: 0; top: 100%; margin-top: 4px; background: var(--bg); border-radius: 10px; }
+    #suggestions:empty { display: none; }
+    .warning { font-size: 13px; color: #b54708; }
+  </style>
+</head>
+<body>
+  <main class="demo">
+    <aside class="panel">
+      <nav class="crumbs"><a href="../">TMaps API examples</a> / 12</nav>
+      <h1>Checkout address form</h1>
+      <p class="lead">A delivery address form for a Tunisian e-commerce site. The customer types the start of the address, picks a suggestion, and the form fills in the commune, delegation, governorate and postcode. Dragging the pin refines the exact delivery point.</p>
+
+      <form class="controls" id="form" autocomplete="off">
+        <label class="field autocomplete">Delivery address
+          <input id="address" type="search" placeholder="Start typing, e.g. Rue de Marseille" required>
+          <ul class="results" id="suggestions"></ul>
+        </label>
+        <div class="row">
+          <label class="field">Postcode <input id="postcode"></label>
+          <label class="field">Commune <input id="commune"></label>
+        </div>
+        <div class="row">
+          <label class="field">Delegation <input id="delegation"></label>
+          <label class="field">Governorate <input id="governorate"></label>
+        </div>
+        <p class="warning" id="warning" hidden>Please check the pin on the map: this address is not precise enough.</p>
+        <button type="submit">Confirm address</button>
+      </form>
+
+      <div class="output" id="output"></div>
+      <div class="error" id="error" role="alert"></div>
+
+      <details class="request" open>
+        <summary>API request</summary>
+        <pre id="request">GET https://api.tmaps.tn/geocoding/forward?q=…&amp;country=TN&amp;limit=5&amp;api_key=YOUR_API_KEY</pre>
+      </details>
+
+      <section class="about">
+        <h2>How it works</h2>
+        <ol>
+          <li>While the customer types, <code>GET /geocoding/forward</code> returns up to 5 suggestions.</li>
+          <li>Picking a suggestion fills the form from <code>components</code> and moves the pin to the address.</li>
+          <li>Dragging the pin calls <code>GET /geocoding/reverse</code> to update the fields for the exact delivery point.</li>
+          <li>On submit, the page shows the payload you would send to your backend: the address fields plus the GPS coordinates.</li>
+        </ol>
+        <h2>Good to know</h2>
+        <ul>
+          <li>Save coordinates directly only when <code>confidence</code> is at least 0.85. Below that, the form asks the customer to check the pin.</li>
+          <li>Storing the GPS point with the order saves drivers from calling the customer to find the address.</li>
+          <li>Set <code>lang=ar</code> to show addresses in Arabic.</li>
+        </ul>
+        <p class="links">
+          <a href="https://www.tmaps.tn/documentation/api/geocoding/forward">Forward Geocoding docs</a> ·
+          <a href="https://www.tmaps.tn/documentation/api/geocoding/reverse">Reverse Geocoding docs</a> ·
+          <a href="https://github.com/tmaps-tn/tmaps-snippets/tree/main/demos/12-checkout-address-form">Source on GitHub</a>
+        </p>
+      </section>
+    </aside>
+    <div id="map"></div>
+  </main>
+
+  <script>
+    const API_KEY = window.TMAPS_API_KEY || 'YOUR_API_KEY';
+    const MIN_CONFIDENCE = 0.85;
+
+    const map = L.map('map').setView([36.8065, 10.1815], 13); // Tunis
+    L.tileLayer(`https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=${API_KEY}`, {
+      maxZoom: 18,
+      attribution: '© <a href="https://www.tmaps.tn">TMaps</a>',
+    }).addTo(map);
+
+    const input = document.getElementById('address');
+    const suggestions = document.getElementById('suggestions');
+    const pin = L.marker(map.getCenter(), { icon: demo.pin('', '#d92d20'), draggable: true });
+    let timer;
+    let controller;
+    let deliveryPoint = null;
+
+    // Appelle l'API TMaps et renvoie le JSON, ou lève une erreur lisible
+    async function tmapsGet(path, params) {
+      const url = new URL(path, 'https://api.tmaps.tn');
+      url.search = new URLSearchParams({ ...params, api_key: API_KEY });
+      controller?.abort();
+      controller = new AbortController();
+      demo.showRequest('GET', url);
+      demo.clearError();
+      const res = await fetch(url, { signal: controller.signal });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(`${res.status} – ${data.error ?? res.statusText}`);
+      return data;
+    }
+
+    input.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(suggest, 300);
+    });
+
+    async function suggest() {
+      const q = input.value.trim();
+      if (q.length < 3) { suggestions.innerHTML = ''; return; }
+      try {
+        const { results } = await tmapsGet('/geocoding/forward', { q, country: 'TN', limit: 5, lang: 'fr' });
+        suggestions.innerHTML = '';
+        for (const result of results) {
+          const li = document.createElement('li');
+          li.className = 'clickable';
+          li.textContent = result.formatted;
+          li.addEventListener('click', () => choose(result));
+          suggestions.append(li);
+        }
+      } catch (error) {
+        if (error.name !== 'AbortError') demo.showError(error);
+      }
+    }
+
+    function choose(result) {
+      suggestions.innerHTML = '';
+      fill(result);
+      document.getElementById('warning').hidden = result.confidence >= MIN_CONFIDENCE;
+      pin.setLatLng([result.lat, result.lng]).addTo(map);
+      map.setView([result.lat, result.lng], 17);
+    }
+
+    // Le client affine la position : on recalcule l'adresse du point exact
+    pin.on('dragend', async () => {
+      const { lat, lng } = pin.getLatLng();
+      try {
+        const { results } = await tmapsGet('/geocoding/reverse', { lat: lat.toFixed(6), lng: lng.toFixed(6), lang: 'fr' });
+        fill({ ...results[0], lat, lng });
+        document.getElementById('warning').hidden = true;
+      } catch (error) {
+        if (error.name !== 'AbortError') demo.showError(error);
+      }
+    });
+
+    function fill(result) {
+      const c = result.components ?? {};
+      input.value = result.formatted;
+      for (const field of ['postcode', 'commune', 'delegation', 'governorate']) {
+        document.getElementById(field).value = c[field] ?? '';
+      }
+      deliveryPoint = { lat: +result.lat.toFixed(6), lng: +result.lng.toFixed(6) };
+    }
+
+    document.getElementById('form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!deliveryPoint) {
+        demo.showError(new Error('Pick an address from the suggestions first.'));
+        return;
+      }
+      const payload = {
+        address: input.value,
+        postcode: document.getElementById('postcode').value,
+        commune: document.getElementById('commune').value,
+        delegation: document.getElementById('delegation').value,
+        governorate: document.getElementById('governorate').value,
+        location: deliveryPoint,
+      };
+      document.getElementById('output').innerHTML =
+        `<p>Payload sent to your backend:</p><pre>${demo.escape(JSON.stringify(payload, null, 2))}</pre>`;
+    });
+  </script>
+</body>
+</html>

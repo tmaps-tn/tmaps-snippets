@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Optimize a delivery route (traveling salesman) – TMaps API example</title>
+  <meta name="description" content="Find the best order to visit up to 50 delivery stops in Tunisia and minimize driving time or distance with the TMaps Optimized Routing API. Live JavaScript example with Leaflet.">
+  <link rel="canonical" href="https://examples.tmaps.tn/10-optimized-route/">
+  <meta property="og:title" content="Optimize a delivery route – TMaps API example">
+  <meta property="og:description" content="Best visiting order for delivery stops in Tunisia with the TMaps Optimized Routing API.">
+  <meta property="og:url" content="https://examples.tmaps.tn/10-optimized-route/">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="https://storage.googleapis.com/tmaps-public-assets/favico.ico?v0">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Optimize a delivery route (traveling salesman problem)",
+    "description": "Find the best order to visit up to 50 stops in Tunisia and minimize travel time or distance with the TMaps Optimized Routing API.",
+    "url": "https://examples.tmaps.tn/10-optimized-route/",
+    "inLanguage": "en",
+    "programmingLanguage": "JavaScript",
+    "about": {
+      "@type": "WebAPI",
+      "name": "TMaps Optimized Routing API",
+      "documentation": "https://www.tmaps.tn/documentation/api/routing/optimized",
+      "provider": { "@type": "Organization", "name": "TMaps", "url": "https://www.tmaps.tn" }
+    },
+    "isPartOf": { "@type": "WebSite", "name": "TMaps API Examples", "url": "https://examples.tmaps.tn/" }
+  }
+  </script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="../shared/demo.css">
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../shared/config.js"></script>
+  <script src="../shared/demo.js"></script>
+</head>
+<body>
+  <main class="demo">
+    <aside class="panel">
+      <nav class="crumbs"><a href="../">TMaps API examples</a> / 10</nav>
+      <h1>Optimized delivery route</h1>
+      <p class="lead">A driver leaves the depot with several parcels. The TMaps Optimized Routing API finds the visiting order that minimizes the total time or distance, a classic traveling salesman problem. Click the map to add stops.</p>
+
+      <div class="controls">
+        <div class="row">
+          <label class="field">Optimize for
+            <select id="optimize"><option value="duration">Shortest time</option><option value="distance">Shortest distance</option></select>
+          </label>
+          <label class="field">Profile
+            <select id="profile"><option value="driving">Driving</option><option value="truck">Truck</option><option value="cycling">Cycling</option></select>
+          </label>
+        </div>
+        <label class="check"><input type="checkbox" id="roundtrip" checked> Return to the depot</label>
+        <div class="row">
+          <button type="button" id="run">Optimize route</button>
+          <button type="button" class="secondary" id="reset">Reset stops</button>
+        </div>
+        <p class="hint">Click the map to add a stop (up to 50).</p>
+      </div>
+
+      <div class="output" id="output"></div>
+      <div class="error" id="error" role="alert"></div>
+
+      <details class="request" open>
+        <summary>API request</summary>
+        <pre id="request">POST https://api.tmaps.tn/routing/optimized?api_key=YOUR_API_KEY</pre>
+      </details>
+
+      <section class="about">
+        <h2>How it works</h2>
+        <ol>
+          <li>The page sends <code>POST /routing/optimized</code> with a fixed <code>origin</code> (the depot) and the <code>waypoints</code> to reorder.</li>
+          <li>The response contains <code>order</code>, the zero-based indexes of the waypoints in the best visiting order: <code>order.map(i =&gt; waypoints[i])</code> gives the sorted list.</li>
+          <li><code>distance</code> and <code>duration</code> are the totals for the whole tour, and <code>legs</code> details each segment.</li>
+        </ol>
+        <h2>Good to know</h2>
+        <ul>
+          <li>Up to 50 waypoints per request. Split larger lists into batches.</li>
+          <li><code>roundtrip=true</code> brings the driver back to the origin. Set a <code>destination</code> to end somewhere else.</li>
+          <li>This version solves a single-vehicle problem without time windows or capacities.</li>
+        </ul>
+        <p class="links">
+          <a href="https://www.tmaps.tn/documentation/api/routing/optimized">Optimized Routing docs</a> ·
+          <a href="https://github.com/tmaps-tn/tmaps-snippets/tree/main/demos/10-optimized-route">Source on GitHub</a>
+        </p>
+      </section>
+    </aside>
+    <div id="map"></div>
+  </main>
+
+  <script>
+    const API_KEY = window.TMAPS_API_KEY || 'YOUR_API_KEY';
+    const DEPOT = { lat: 36.8355, lng: 10.2261 };
+    const SAMPLE_STOPS = [
+      { lat: 36.8485, lng: 10.1712 },
+      { lat: 36.8644, lng: 10.1808 },
+      { lat: 36.8664, lng: 10.1938 },
+      { lat: 36.8779, lng: 10.2024 },
+      { lat: 36.8190, lng: 10.1660 },
+      { lat: 36.8412, lng: 10.2655 },
+    ];
+
+    const map = L.map('map').setView([36.85, 10.21], 13);
+    L.tileLayer(`https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=${API_KEY}`, {
+      maxZoom: 18,
+      attribution: '© <a href="https://www.tmaps.tn">TMaps</a>',
+    }).addTo(map);
+
+    L.marker(DEPOT, { icon: demo.pin('D', '#14182b') }).bindTooltip('Depot').addTo(map);
+    const stopLayer = L.layerGroup().addTo(map);
+    const route = L.geoJSON(null, { style: { color: '#2e47f0', weight: 5, opacity: 0.8 } }).addTo(map);
+    let stops = [...SAMPLE_STOPS];
+
+    map.on('click', (event) => {
+      if (stops.length >= 50) return;
+      stops.push({ lat: +event.latlng.lat.toFixed(6), lng: +event.latlng.lng.toFixed(6) });
+      drawStops();
+    });
+    document.getElementById('run').addEventListener('click', optimize);
+    document.getElementById('reset').addEventListener('click', () => {
+      stops = [...SAMPLE_STOPS];
+      route.clearLayers();
+      document.getElementById('output').innerHTML = '';
+      drawStops();
+    });
+
+    // Sans ordre : marqueurs gris. Avec ordre : numéros de passage.
+    function drawStops(order) {
+      stopLayer.clearLayers();
+      stops.forEach((stop, index) => {
+        const position = order ? order.indexOf(index) + 1 : '';
+        L.marker(stop, { icon: demo.pin(position, order ? '#d92d20' : '#5b6178') }).addTo(stopLayer);
+      });
+    }
+
+    async function optimize() {
+      if (!stops.length) return;
+      const body = {
+        origin: DEPOT,
+        waypoints: stops,
+        profile: document.getElementById('profile').value,
+        optimize: document.getElementById('optimize').value,
+        roundtrip: document.getElementById('roundtrip').checked,
+        geometry: 'geojson',
+      };
+      const url = new URL('https://api.tmaps.tn/routing/optimized');
+      url.searchParams.set('api_key', API_KEY);
+
+      demo.showRequest('POST', url, body);
+      demo.clearError();
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 404) throw new Error('No route could be calculated: a stop may be outside the coverage area.');
+        if (!res.ok) throw new Error(`${res.status} – ${data.error ?? res.statusText}`);
+        render(data);
+      } catch (error) {
+        demo.showError(error);
+      }
+    }
+
+    function render(data) {
+      drawStops(data.order);
+      route.clearLayers().addData(data.geometry);
+      map.fitBounds(route.getBounds(), { padding: [40, 40] });
+
+      document.getElementById('output').innerHTML = `
+        <div class="stats">
+          <div class="stat"><b>${data.order.length}</b><span>Stops</span></div>
+          <div class="stat"><b>${demo.formatDistance(data.distance)}</b><span>Total distance</span></div>
+          <div class="stat"><b>${demo.formatDuration(data.duration)}</b><span>Total time</span></div>
+        </div>
+        <ol class="results">${data.order.map((i) => `
+          <li>Stop #${i + 1}<br><small>${stops[i].lat.toFixed(5)}, ${stops[i].lng.toFixed(5)}</small></li>`).join('')}
+        </ol>`;
+    }
+
+    drawStops();
+    optimize();
+  </script>
+</body>
+</html>

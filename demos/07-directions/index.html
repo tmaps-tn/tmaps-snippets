@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Driving, walking and cycling directions – TMaps API example</title>
+  <meta name="description" content="Calculate a route between two points in Tunisia with distance, travel time and turn-by-turn instructions using the TMaps Directions API. Live JavaScript example with Leaflet.">
+  <link rel="canonical" href="https://examples.tmaps.tn/07-directions/">
+  <meta property="og:title" content="Driving, walking and cycling directions – TMaps API example">
+  <meta property="og:description" content="Route, travel time and turn-by-turn instructions in Tunisia with the TMaps Directions API.">
+  <meta property="og:url" content="https://examples.tmaps.tn/07-directions/">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="https://storage.googleapis.com/tmaps-public-assets/favico.ico?v0">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Driving, walking and cycling directions",
+    "description": "Calculate a route between two points in Tunisia with distance, travel time and turn-by-turn instructions using the TMaps Directions API.",
+    "url": "https://examples.tmaps.tn/07-directions/",
+    "inLanguage": "en",
+    "programmingLanguage": "JavaScript",
+    "about": {
+      "@type": "WebAPI",
+      "name": "TMaps Directions API",
+      "documentation": "https://www.tmaps.tn/documentation/api/routing/direction",
+      "provider": { "@type": "Organization", "name": "TMaps", "url": "https://www.tmaps.tn" }
+    },
+    "isPartOf": { "@type": "WebSite", "name": "TMaps API Examples", "url": "https://examples.tmaps.tn/" }
+  }
+  </script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="../shared/demo.css">
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../shared/config.js"></script>
+  <script src="../shared/demo.js"></script>
+</head>
+<body>
+  <main class="demo">
+    <aside class="panel">
+      <nav class="crumbs"><a href="../">TMaps API examples</a> / 07</nav>
+      <h1>Directions with turn-by-turn instructions</h1>
+      <p class="lead">Drag the A and B markers to calculate a route in Tunisia. The TMaps Directions API returns the distance, the travel time, the route geometry and turn-by-turn instructions.</p>
+
+      <div class="controls">
+        <div class="row">
+          <label class="field">Profile
+            <select id="profile"><option value="driving">Driving</option><option value="walking">Walking</option><option value="cycling">Cycling</option><option value="truck">Truck</option></select>
+          </label>
+          <label class="field">Instructions
+            <select id="language"><option value="en">English</option><option value="fr">French</option><option value="ar">Arabic</option></select>
+          </label>
+        </div>
+        <label class="check"><input type="checkbox" id="avoid-tolls"> Avoid tolls</label>
+        <p class="hint">Drag the markers, or click the map to move B.</p>
+      </div>
+
+      <div class="output" id="output"></div>
+      <div class="error" id="error" role="alert"></div>
+
+      <details class="request" open>
+        <summary>API request</summary>
+        <pre id="request">GET https://api.tmaps.tn/routing/direction?from=36.7992,10.1709&amp;to=36.8528,10.3261&amp;profile=driving&amp;geometry=geojson&amp;steps=true&amp;api_key=YOUR_API_KEY</pre>
+      </details>
+
+      <section class="about">
+        <h2>How it works</h2>
+        <ol>
+          <li>The page sends <code>GET /routing/direction</code> with <code>from</code> and <code>to</code> as <code>lat,lng</code>.</li>
+          <li><code>geometry=geojson</code> returns the route as a GeoJSON LineString that Leaflet draws directly, with no polyline decoder.</li>
+          <li><code>steps=true</code> adds the turn-by-turn instructions in <code>legs[].steps</code>, in the language set by <code>language</code>.</li>
+        </ol>
+        <h2>Good to know</h2>
+        <ul>
+          <li>Profiles: <code>driving</code>, <code>walking</code>, <code>cycling</code> and <code>truck</code> (avoids roads closed to heavy vehicles).</li>
+          <li>For more than two points, send a <code>POST</code> with a <code>waypoints</code> array (up to 25).</li>
+          <li><code>avoid</code> accepts <code>tolls</code>, <code>highways</code> and <code>ferries</code>. <code>alternatives=true</code> returns up to two other routes.</li>
+          <li>Distances are in meters and durations in seconds.</li>
+        </ul>
+        <p class="links">
+          <a href="https://www.tmaps.tn/documentation/api/routing/direction">Directions docs</a> ·
+          <a href="https://github.com/tmaps-tn/tmaps-snippets/tree/main/demos/07-directions">Source on GitHub</a>
+        </p>
+      </section>
+    </aside>
+    <div id="map"></div>
+  </main>
+
+  <script>
+    const API_KEY = window.TMAPS_API_KEY || 'YOUR_API_KEY';
+
+    const map = L.map('map').setView([36.825, 10.25], 12);
+    L.tileLayer(`https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=${API_KEY}`, {
+      maxZoom: 18,
+      attribution: '© <a href="https://www.tmaps.tn">TMaps</a>',
+    }).addTo(map);
+
+    // Médina de Tunis → Carthage
+    const start = L.marker([36.7992, 10.1709], { icon: demo.pin('A', '#2e47f0'), draggable: true }).addTo(map);
+    const end = L.marker([36.8528, 10.3261], { icon: demo.pin('B', '#d92d20'), draggable: true }).addTo(map);
+    const route = L.geoJSON(null, { style: { color: '#2e47f0', weight: 5, opacity: 0.8 } }).addTo(map);
+
+    start.on('dragend', directions);
+    end.on('dragend', directions);
+    map.on('click', (event) => { end.setLatLng(event.latlng); directions(); });
+    ['profile', 'language', 'avoid-tolls'].forEach((id) => document.getElementById(id).addEventListener('change', directions));
+
+    async function directions() {
+      const a = start.getLatLng();
+      const b = end.getLatLng();
+      const url = new URL('https://api.tmaps.tn/routing/direction');
+      url.search = new URLSearchParams({
+        from: `${a.lat.toFixed(5)},${a.lng.toFixed(5)}`,
+        to: `${b.lat.toFixed(5)},${b.lng.toFixed(5)}`,
+        profile: document.getElementById('profile').value,
+        geometry: 'geojson',
+        steps: 'true',
+        language: document.getElementById('language').value,
+        api_key: API_KEY,
+      });
+      if (document.getElementById('avoid-tolls').checked) url.searchParams.set('avoid', 'tolls');
+
+      demo.showRequest('GET', url);
+      demo.clearError();
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 404) throw new Error('No route found between these points.');
+        if (!res.ok) throw new Error(`${res.status} – ${data.error ?? res.statusText}`);
+        render(data);
+      } catch (error) {
+        route.clearLayers();
+        document.getElementById('output').innerHTML = '';
+        demo.showError(error);
+      }
+    }
+
+    function render(data) {
+      route.clearLayers().addData(data.geometry);
+      map.fitBounds(route.getBounds(), { padding: [40, 40] });
+
+      const steps = data.legs.flatMap((leg) => leg.steps ?? []);
+      document.getElementById('output').innerHTML = `
+        <div class="stats">
+          <div class="stat"><b>${demo.formatDistance(data.distance)}</b><span>Distance</span></div>
+          <div class="stat"><b>${demo.formatDuration(data.duration)}</b><span>Travel time</span></div>
+        </div>
+        <ol class="results">${steps.map((step) => `
+          <li>${demo.escape(step.instruction)}<br><small>${demo.formatDistance(step.distance)} · ${demo.formatDuration(step.duration)}</small></li>`).join('')}
+        </ol>`;
+    }
+
+    directions();
+  </script>
+</body>
+</html>

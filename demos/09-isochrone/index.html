@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Delivery zone with isochrones (5, 10, 15 min) – TMaps API example</title>
+  <meta name="description" content="Draw the area reachable in 5, 10 and 15 minutes from a restaurant, store or warehouse in Tunisia with the TMaps Isochrone API. GeoJSON polygons displayed with Leaflet.">
+  <link rel="canonical" href="https://examples.tmaps.tn/09-isochrone/">
+  <meta property="og:title" content="Delivery zone with isochrones – TMaps API example">
+  <meta property="og:description" content="Area reachable in 5, 10 and 15 minutes from a point in Tunisia with the TMaps Isochrone API.">
+  <meta property="og:url" content="https://examples.tmaps.tn/09-isochrone/">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="https://storage.googleapis.com/tmaps-public-assets/favico.ico?v0">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Delivery zone with isochrones (5, 10, 15 min)",
+    "description": "Draw the area reachable in a given time or distance from a point in Tunisia with the TMaps Isochrone API.",
+    "url": "https://examples.tmaps.tn/09-isochrone/",
+    "inLanguage": "en",
+    "programmingLanguage": "JavaScript",
+    "about": {
+      "@type": "WebAPI",
+      "name": "TMaps Isochrone API",
+      "documentation": "https://www.tmaps.tn/documentation/api/routing/isochrone",
+      "provider": { "@type": "Organization", "name": "TMaps", "url": "https://www.tmaps.tn" }
+    },
+    "isPartOf": { "@type": "WebSite", "name": "TMaps API Examples", "url": "https://examples.tmaps.tn/" }
+  }
+  </script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="../shared/demo.css">
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../shared/config.js"></script>
+  <script src="../shared/demo.js"></script>
+  <style>
+    .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 8px; vertical-align: -1px; }
+  </style>
+</head>
+<body>
+  <main class="demo">
+    <aside class="panel">
+      <nav class="crumbs"><a href="../">TMaps API examples</a> / 09</nav>
+      <h1>Delivery zone with isochrones</h1>
+      <p class="lead">See which area a restaurant, a store or a warehouse can reach in 5, 10 and 15 minutes. The TMaps Isochrone API returns the reachable zones as GeoJSON polygons. Click the map to move the starting point.</p>
+
+      <div class="controls">
+        <div class="row">
+          <label class="field">Profile
+            <select id="profile"><option value="driving">Driving</option><option value="cycling">Cycling</option><option value="walking">Walking</option><option value="truck">Truck</option></select>
+          </label>
+          <label class="field">Contours
+            <select id="contours">
+              <option value="time:5,10,15">5 / 10 / 15 min</option>
+              <option value="time:10,20,30">10 / 20 / 30 min</option>
+              <option value="distance:2,5,10">2 / 5 / 10 km</option>
+            </select>
+          </label>
+        </div>
+        <p class="hint">Click the map to calculate the zones from another point.</p>
+      </div>
+
+      <div class="output"><ul class="results" id="legend"></ul></div>
+      <div class="error" id="error" role="alert"></div>
+
+      <details class="request" open>
+        <summary>API request</summary>
+        <pre id="request">POST https://api.tmaps.tn/routing/isochrone?api_key=YOUR_API_KEY</pre>
+      </details>
+
+      <section class="about">
+        <h2>How it works</h2>
+        <ol>
+          <li>The page sends <code>POST /routing/isochrone</code> with an <code>origin</code> and a list of <code>contours</code>, each one <code>{ time: minutes }</code> or <code>{ distance: km }</code>.</li>
+          <li>The response is a GeoJSON <code>FeatureCollection</code> with one polygon per contour, in the order requested.</li>
+          <li>The largest zone is drawn first so the smaller ones stay visible on top.</li>
+        </ol>
+        <h2>Good to know</h2>
+        <ul>
+          <li>Up to 4 contours per request, 60 minutes or 50 km each.</li>
+          <li>The optional <code>colors</code> array is echoed back in each feature's <code>properties.color</code>, ready for styling.</li>
+          <li>Typical uses: delivery zones, retail catchment areas, "schools within 10 minutes" for real estate, emergency coverage.</li>
+        </ul>
+        <p class="links">
+          <a href="https://www.tmaps.tn/documentation/api/routing/isochrone">Isochrone docs</a> ·
+          <a href="https://github.com/tmaps-tn/tmaps-snippets/tree/main/demos/09-isochrone">Source on GitHub</a>
+        </p>
+      </section>
+    </aside>
+    <div id="map"></div>
+  </main>
+
+  <script>
+    const API_KEY = window.TMAPS_API_KEY || 'YOUR_API_KEY';
+    const COLORS = ['#22c55e', '#f59e0b', '#ef4444'];
+
+    const map = L.map('map').setView([36.8002, 10.1815], 12); // Tunis
+    L.tileLayer(`https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=${API_KEY}`, {
+      maxZoom: 18,
+      attribution: '© <a href="https://www.tmaps.tn">TMaps</a>',
+    }).addTo(map);
+
+    const origin = L.marker([36.8002, 10.1815], { icon: demo.pin('', '#14182b') }).addTo(map);
+    const zones = L.geoJSON(null, {
+      style: (feature) => ({ color: feature.properties.color, weight: 2, fillOpacity: 0.2 }),
+    }).addTo(map);
+
+    map.on('click', (event) => { origin.setLatLng(event.latlng); isochrone(); });
+    ['profile', 'contours'].forEach((id) => document.getElementById(id).addEventListener('change', isochrone));
+
+    async function isochrone() {
+      const { lat, lng } = origin.getLatLng();
+      const [metric, values] = document.getElementById('contours').value.split(':');
+      const body = {
+        origin: { lat: +lat.toFixed(6), lng: +lng.toFixed(6) },
+        contours: values.split(',').map((value) => ({ [metric]: Number(value) })),
+        profile: document.getElementById('profile').value,
+        colors: COLORS,
+      };
+      const url = new URL('https://api.tmaps.tn/routing/isochrone');
+      url.searchParams.set('api_key', API_KEY);
+
+      demo.showRequest('POST', url, body);
+      demo.clearError();
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 404) throw new Error('This point is outside the coverage area.');
+        if (!res.ok) throw new Error(`${res.status} – ${data.error ?? res.statusText}`);
+        render(data, metric);
+      } catch (error) {
+        zones.clearLayers();
+        document.getElementById('legend').innerHTML = '';
+        demo.showError(error);
+      }
+    }
+
+    function render(collection, metric) {
+      // Le plus grand contour d'abord, pour que les plus petits restent au premier plan
+      zones.clearLayers().addData({ ...collection, features: [...collection.features].reverse() });
+      map.fitBounds(zones.getBounds(), { padding: [20, 20] });
+
+      const unit = metric === 'time' ? 'min' : 'km';
+      document.getElementById('legend').innerHTML = collection.features.map(({ properties }) => `
+        <li><span class="swatch" style="background:${properties.color}"></span>Reachable within ${properties.contour} ${unit}</li>`).join('');
+    }
+
+    isochrone();
+  </script>
+</body>
+</html>

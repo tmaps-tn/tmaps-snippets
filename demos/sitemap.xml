@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://examples.tmaps.tn/</loc></url>
-  <url><loc>https://examples.tmaps.tn/01-raster-leaflet/</loc></url>
-  <url><loc>https://examples.tmaps.tn/02-raster-openlayers/</loc></url>
-  <url><loc>https://examples.tmaps.tn/03-vector-maplibre-styles/</loc></url>
+  <url><loc>https://examples.tmaps.tn/</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://examples.tmaps.tn/01-raster-leaflet/</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://examples.tmaps.tn/02-raster-openlayers/</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://examples.tmaps.tn/03-vector-maplibre-styles/</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://examples.tmaps.tn/04-geocoding-search/</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://examples.tmaps.tn/05-reverse-geocoding/</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://examples.tmaps.tn/06-static-map/</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://examples.tmaps.tn/07-directions/</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://examples.tmaps.tn/08-nearby-search/</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://examples.tmaps.tn/09-isochrone/</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://examples.tmaps.tn/10-optimized-route/</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://examples.tmaps.tn/11-distance-matrix/</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://examples.tmaps.tn/12-checkout-address-form/</loc><lastmod>2026-10-23</lastmod></url>
 </urlset>

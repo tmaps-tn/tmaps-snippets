@@ -1,33 +1,84 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Carte Leaflet avec les tuiles raster TMaps</title>
-  <meta name="description" content="Afficher une carte de la Tunisie avec Leaflet et les tuiles raster TMaps. Exemple HTML autonome, sans build.">
+  <title>Map of Tunisia with Leaflet and raster tiles – TMaps API example</title>
+  <meta name="description" content="Display an interactive map of Tunisia in Leaflet with TMaps raster tiles (PNG, XYZ). Copy-paste JavaScript example, no build step.">
   <link rel="canonical" href="https://examples.tmaps.tn/01-raster-leaflet/">
-  <meta property="og:title" content="Carte Leaflet avec les tuiles raster TMaps">
-  <meta property="og:description" content="Afficher une carte de la Tunisie avec Leaflet et les tuiles raster TMaps.">
+  <meta property="og:title" content="Map of Tunisia with Leaflet – TMaps API example">
+  <meta property="og:description" content="Interactive map of Tunisia in Leaflet with TMaps raster tiles.">
   <meta property="og:url" content="https://examples.tmaps.tn/01-raster-leaflet/">
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary">
   <link rel="icon" href="https://storage.googleapis.com/tmaps-public-assets/favico.ico?v0">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Map of Tunisia with Leaflet and raster tiles",
+    "description": "Display an interactive map of Tunisia in Leaflet with TMaps raster tiles (PNG, XYZ).",
+    "url": "https://examples.tmaps.tn/01-raster-leaflet/",
+    "inLanguage": "en",
+    "programmingLanguage": "JavaScript",
+    "about": {
+      "@type": "WebAPI",
+      "name": "TMaps Raster Tiles API",
+      "documentation": "https://www.tmaps.tn/documentation/api/raster-tiles",
+      "provider": { "@type": "Organization", "name": "TMaps", "url": "https://www.tmaps.tn" }
+    },
+    "isPartOf": { "@type": "WebSite", "name": "TMaps API Examples", "url": "https://examples.tmaps.tn/" }
+  }
+  </script>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="../shared/demo.css">
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="../shared/config.js"></script>
-
-  <style>
-    html, body, #map { height: 100%; margin: 0; }
-    .notice {
-      position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 1000;
-      padding: 8px 14px; border-radius: 8px; background: #b42318; color: #fff;
-      font: 14px/1.4 system-ui, sans-serif; display: none;
-    }
-  </style>
+  <script src="../shared/demo.js"></script>
 </head>
 <body>
-  <div id="map"></div>
-  <div class="notice" id="notice"></div>
+  <main class="demo">
+    <aside class="panel">
+      <nav class="crumbs"><a href="../">TMaps API examples</a> / 01</nav>
+      <h1>Map of Tunisia with Leaflet</h1>
+      <p class="lead">The simplest way to show a TMaps map: Leaflet plus the TMaps raster tiles. Worldwide coverage, with extra detail for Tunisia.</p>
+
+      <div class="error" id="error" role="alert"></div>
+
+      <details class="request" open>
+        <summary>Tile URL</summary>
+        <pre id="request">https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=YOUR_API_KEY</pre>
+      </details>
+
+      <section class="about">
+        <h2>How it works</h2>
+        <ol>
+          <li>Leaflet requests 256 × 256 PNG tiles following the standard XYZ scheme (<code>z</code> = zoom, <code>x</code>/<code>y</code> = tile position).</li>
+          <li>The API key is passed in the <code>api_key</code> query parameter of the tile URL.</li>
+          <li>Set <code>maxZoom: 18</code>: tiles stop at zoom 18.</li>
+        </ol>
+        <h2>The code</h2>
+        <pre>const map = L.map('map').setView([36.8002, 10.1815], 12);
+
+L.tileLayer(
+  'https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=YOUR_API_KEY',
+  { maxZoom: 18, attribution: '© TMaps' }
+).addTo(map);</pre>
+        <h2>Good to know</h2>
+        <ul>
+          <li>The same tile URL works in OpenLayers, MapLibre GL and mobile SDKs that support XYZ layers.</li>
+          <li>Tiles are sent with long cache headers. Enable disk caching on mobile to save data.</li>
+          <li>Retina (@2x) tiles are not available yet. For sharp maps on high-density screens, use the <a href="../03-vector-maplibre-styles/">vector tiles</a>.</li>
+        </ul>
+        <p class="links">
+          <a href="https://www.tmaps.tn/documentation/api/raster-tiles">Raster tiles docs</a> ·
+          <a href="https://github.com/tmaps-tn/tmaps-snippets/tree/main/demos/01-raster-leaflet">Source on GitHub</a>
+        </p>
+      </section>
+    </aside>
+    <div id="map"></div>
+  </main>
 
   <script>
     const API_KEY = window.TMAPS_API_KEY || 'YOUR_API_KEY';
@@ -38,14 +89,8 @@
       maxZoom: 18,
       attribution: '© <a href="https://www.tmaps.tn">TMaps</a>',
     })
-      .on('tileerror', () => showNotice('Tuiles indisponibles : vérifiez votre clé API et vos domaines autorisés.'))
+      .once('tileerror', () => demo.showError(new Error('Tiles could not be loaded. Check your API key and its authorized domains.')))
       .addTo(map);
-
-    function showNotice(message) {
-      const el = document.getElementById('notice');
-      el.textContent = message;
-      el.style.display = 'block';
-    }
   </script>
 </body>
 </html>
