@@ -2,7 +2,13 @@
 
 Ready-to-run Postman collection for the [TMaps](https://www.tmaps.tn) APIs: map tiles, forward geocoding, reverse geocoding and nearby search for Tunisia.
 
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://god.gw.postman.com/run-collection/59164577-39c61a9a-5dec-4a19-bfb0-78e040babbe5?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D59164577-39c61a9a-5dec-4a19-bfb0-78e040babbe5%26entityType%3Dcollection%26workspaceId%3Dd930590d-cd34-4179-bf0c-14ef875c22af)
+
+Public workspace: https://www.postman.com/tmapstn-6735293/tmaps-api
+
 ## Import
+
+The quickest way is the **Run in Postman** button above: it forks the collection and environment into your workspace. To import the files instead:
 
 1. In Postman, click **Import** and drop both files:
    - [`TMaps-API.postman_collection.json`](TMaps-API.postman_collection.json)
