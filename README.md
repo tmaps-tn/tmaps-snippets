@@ -28,7 +28,7 @@ Try the API without writing code: fork the collection from the [TMaps public wor
 
 ## CodePen and JSFiddle
 
-Prefer to play in the browser? Four examples are on [CodePen](https://codepen.io/tmaps) and JSFiddle, ready to fork: a [Leaflet map](https://codepen.io/tmaps/pen/KwWBabZ), [vector styles with MapLibre](https://codepen.io/tmaps/pen/yyMqgGK), an [OpenLayers map with a shareable view](https://codepen.io/tmaps/pen/zxZLNyy) and an [address search in French, Arabic and Arabizi](https://codepen.io/tmaps/pen/vExagbN). The same examples on JSFiddle: [Leaflet](https://jsfiddle.net/Tmaps/8wyrz5j9/), [MapLibre](https://jsfiddle.net/Tmaps/1ej8bg92/), [OpenLayers](https://jsfiddle.net/Tmaps/vw0smpe6/) and [address search](https://jsfiddle.net/Tmaps/dt4scn98/). Their code is in [codepen/](codepen/).
+Prefer to play in the browser? Four examples are on [CodePen](https://codepen.io/tmaps) and JSFiddle, ready to fork: a [Leaflet map](https://codepen.io/tmaps/pen/KwWBabZ), [vector styles with MapLibre](https://codepen.io/tmaps/pen/yyMqgGK), an [OpenLayers map with a shareable view](https://codepen.io/tmaps/pen/zxZLNyy) and an [address search in French, Arabic and Arabizi](https://codepen.io/tmaps/pen/vExagbN). The same examples on JSFiddle: [Leaflet](https://jsfiddle.net/Tmaps/8wyrz5j9/), [MapLibre](https://jsfiddle.net/Tmaps/1ej8bg92/), [OpenLayers](https://jsfiddle.net/Tmaps/vw0smpe6/) and [address search](https://jsfiddle.net/Tmaps/dt4scn98/). Their code is in [playgrounds/](playgrounds/).
 
 ## Repository layout
 
@@ -38,7 +38,7 @@ servers/go/       Go server (standard library only)
 servers/node/     Node.js server (no dependencies)
 servers/python/   Python server (standard library only)
 postman/          Postman collection and environment
-codepen/          Code of the CodePen examples (HTML, CSS, JS panels)
+playgrounds/      Code of the CodePen and JSFiddle examples (HTML, CSS, JS panels)
 pending/          Examples waiting for their API endpoint in production
 docker-compose.yml
 ```
