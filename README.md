@@ -4,15 +4,15 @@ Ready-to-run, client-side code examples for the [TMaps](https://www.tmaps.tn) AP
 
 > 🇫🇷 Exemples de code prêts à l'emploi pour les API TMaps : cartes, géocodage, itinéraires et isochrones en Tunisie. Chaque exemple est un fichier HTML autonome, sans build.
 
-**[▶ Browse all live demos](https://tmaps-tn.github.io/tmaps-snippets/)** · [API documentation](https://www.tmaps.tn/documentation)
+**[▶ Browse all live demos](https://examples.tmaps.tn/)** · [API documentation](https://www.tmaps.tn/documentation)
 
 ## Examples
 
 | # | Example | API | Library | Demo |
 |---|---------|-----|---------|------|
-| 01 | [Raster tiles with Leaflet](demos/01-raster-leaflet/) | Raster tiles | Leaflet | [Live](https://tmaps-tn.github.io/tmaps-snippets/01-raster-leaflet/) |
-| 02 | [Raster tiles with OpenLayers](demos/02-raster-openlayers/) | Raster tiles | OpenLayers | [Live](https://tmaps-tn.github.io/tmaps-snippets/02-raster-openlayers/) |
-| 03 | [Vector tiles, 4 styles](demos/03-vector-maplibre-styles/) | Vector tiles | MapLibre GL | [Live](https://tmaps-tn.github.io/tmaps-snippets/03-vector-maplibre-styles/) |
+| 01 | [Raster tiles with Leaflet](demos/01-raster-leaflet/) | Raster tiles | Leaflet | [Live](https://examples.tmaps.tn/01-raster-leaflet/) |
+| 02 | [Raster tiles with OpenLayers](demos/02-raster-openlayers/) | Raster tiles | OpenLayers | [Live](https://examples.tmaps.tn/02-raster-openlayers/) |
+| 03 | [Vector tiles, 4 styles](demos/03-vector-maplibre-styles/) | Vector tiles | MapLibre GL | [Live](https://examples.tmaps.tn/03-vector-maplibre-styles/) |
 
 Coming soon: address search, reverse geocoding on click, static maps, directions, nearby search, delivery zone (isochrone), optimized route, nearest driver (distance matrix), checkout address form.
 

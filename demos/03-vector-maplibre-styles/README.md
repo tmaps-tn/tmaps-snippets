@@ -2,7 +2,7 @@
 
 Vector map with [MapLibre GL JS](https://maplibre.org) and the four TMaps styles: `streets`, `dark`, `terrain`, `sunny`. Styles are switched live with `map.setStyle()`.
 
-**[Live demo](https://tmaps-tn.github.io/tmaps-snippets/03-vector-maplibre-styles/)** · [Vector tiles docs](https://www.tmaps.tn/documentation/api/vector-tiles)
+**[Live demo](https://examples.tmaps.tn/03-vector-maplibre-styles/)** · [Vector tiles docs](https://www.tmaps.tn/documentation/api/vector-tiles)
 
 ```js
 const map = new maplibregl.Map({

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://tmaps-tn.github.io/tmaps-snippets/</loc></url>
-  <url><loc>https://tmaps-tn.github.io/tmaps-snippets/01-raster-leaflet/</loc></url>
-  <url><loc>https://tmaps-tn.github.io/tmaps-snippets/02-raster-openlayers/</loc></url>
-  <url><loc>https://tmaps-tn.github.io/tmaps-snippets/03-vector-maplibre-styles/</loc></url>
+  <url><loc>https://examples.tmaps.tn/</loc></url>
+  <url><loc>https://examples.tmaps.tn/01-raster-leaflet/</loc></url>
+  <url><loc>https://examples.tmaps.tn/02-raster-openlayers/</loc></url>
+  <url><loc>https://examples.tmaps.tn/03-vector-maplibre-styles/</loc></url>
 </urlset>
