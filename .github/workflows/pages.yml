@@ -1,0 +1,41 @@
+# Publie demos/ sur GitHub Pages. Si le secret TMAPS_API_KEY est défini,
+# la clé est injectée dans shared/config.js au moment du déploiement.
+name: Deploy demos to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      TMAPS_API_KEY: ${{ secrets.TMAPS_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Inject API key
+        if: ${{ env.TMAPS_API_KEY != '' }}
+        run: printf 'window.TMAPS_API_KEY = "%s";\n' "$TMAPS_API_KEY" > demos/shared/config.js
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: demos
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,22 @@
+# Lance les trois serveurs de démos. La clé est lue depuis le fichier .env :
+#   cp .env.example .env && docker compose up --build
+name: tmaps-snippets
+
+services:
+  go:
+    build: { context: ., dockerfile: servers/go/Dockerfile }
+    ports: ["8081:8080"]
+    environment:
+      TMAPS_API_KEY: ${TMAPS_API_KEY:-}
+
+  node:
+    build: { context: ., dockerfile: servers/node/Dockerfile }
+    ports: ["8082:8080"]
+    environment:
+      TMAPS_API_KEY: ${TMAPS_API_KEY:-}
+
+  python:
+    build: { context: ., dockerfile: servers/python/Dockerfile }
+    ports: ["8083:8080"]
+    environment:
+      TMAPS_API_KEY: ${TMAPS_API_KEY:-}
