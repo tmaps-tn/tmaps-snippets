@@ -73,6 +73,12 @@
           <li>A pending request is cancelled with <code>AbortController</code> when a new one starts, so old results never overwrite new ones.</li>
           <li>Click a result to place it on the map. Its <code>bbox</code> is used to zoom to the right level.</li>
         </ol>
+        <h2>Arabic and Tunisian Arabizi</h2>
+        <ul>
+          <li>Type in Arabic (<code>نهج مرسيليا</code>) and set the language to Arabic: <code>lang=ar</code> returns the addresses in Arabic, shown right-to-left with <code>dir="auto"</code>.</li>
+          <li>Tunisian words and Arabizi digits are understood: <code>nahj</code> (rue), <code>zan9a</code> (impasse), <code>chare3</code> (avenue), and <code>3</code>, <code>5</code>, <code>7</code>, <code>9</code> for ع, خ, ح, ق. Try <code>9asr said</code> or <code>3in zaghouan</code>.</li>
+          <li>When the text contains these, the page sends the raw and a normalized query in parallel and merges the results. Numbers (<code>4014</code>) and road names (<code>RN9</code>) are left untouched.</li>
+        </ul>
         <h2>Good to know</h2>
         <ul>
           <li><code>confidence</code> goes from 0 to 1. For deliveries or e-commerce, only save coordinates when it is at least 0.85 and ask the user to confirm otherwise.</li>
@@ -116,10 +122,23 @@
       search();
     });
 
-    async function search() {
-      const q = input.value.trim();
-      if (q.length < 3) return;
+    // Mots du dialecte tunisien et chiffres de l'arabizi, réécrits comme dans les adresses
+    const DIALECT = {
+      nahj: 'rue', nhej: 'rue', zan9a: 'impasse', zan9et: 'impasse', zanket: 'impasse',
+      chare3: 'avenue', chara3: 'avenue', hay: 'cité', '7ay': 'cité',
+    };
+    const ARABIZI = { 3: 'a', 5: 'kh', 7: 'h', 9: 'k' };
 
+    function normalizeTunisian(text) {
+      return text.toLowerCase().split(/\s+/).map((word) => {
+        if (DIALECT[word]) return DIALECT[word];
+        // On ne touche ni aux nombres (4014) ni aux routes (rn9, c27)
+        if (!/[a-z]/.test(word) || /^[a-z]{1,2}\d+$/.test(word)) return word;
+        return word.replace(/3a/g, 'a').replace(/[3579]/g, (digit) => ARABIZI[digit]);
+      }).join(' ');
+    }
+
+    async function geocode(q, signal) {
       const center = map.getCenter();
       const url = new URL('https://api.tmaps.tn/geocoding/forward');
       url.search = new URLSearchParams({
@@ -130,17 +149,32 @@
         proximity: `${center.lat.toFixed(5)},${center.lng.toFixed(5)}`,
         api_key: API_KEY,
       });
+      demo.showRequest('GET', url);
+
+      const res = await fetch(url, { signal });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(`${res.status} – ${data.error ?? res.statusText}`);
+      return data.results;
+    }
+
+    async function search() {
+      const q = input.value.trim();
+      if (q.length < 3) return;
 
       controller?.abort();
       controller = new AbortController();
-      demo.showRequest('GET', url);
       demo.clearError();
 
+      // Si la saisie contient du dialecte ou de l'arabizi, on cherche aussi la version normalisée
+      const normalized = normalizeTunisian(q);
+      const queries = normalized === q.toLowerCase() ? [q] : [q, normalized];
+
       try {
-        const res = await fetch(url, { signal: controller.signal });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(`${res.status} – ${data.error ?? res.statusText}`);
-        render(data.results);
+        const lists = await Promise.all(queries.map((text) => geocode(text, controller.signal)));
+        // Version normalisée en premier, puis la saisie brute, sans doublons
+        const seen = new Set();
+        const results = lists.reverse().flat().filter((r) => !seen.has(r.formatted) && seen.add(r.formatted));
+        render(results.slice(0, 5));
       } catch (error) {
         if (error.name !== 'AbortError') demo.showError(error);
       }
@@ -156,6 +190,7 @@
         const { commune, delegation, governorate } = result.components ?? {};
         const li = document.createElement('li');
         li.className = 'clickable';
+        li.dir = 'auto'; // adresses en arabe affichées de droite à gauche
         li.innerHTML = `
           ${demo.escape(result.formatted)}<br>
           <small>${demo.escape(result.type)} · confidence ${Math.round(result.confidence * 100)}%

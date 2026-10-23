@@ -16,3 +16,5 @@ GET https://api.tmaps.tn/geocoding/forward?q=Avenue%20Habib%20Bourguiba%2C%20Tun
 - Old requests are cancelled with `AbortController` so they never overwrite newer results.
 - Only save coordinates when `confidence` is at least 0.85.
 - The point is in `geometry.location` (`lat`, `lng`).
+- Arabic: `lang=ar` returns addresses in Arabic; results use `dir="auto"` to display right-to-left.
+- Tunisian Arabizi and dialect (`9asr said`, `3in zaghouan`, `nahj`, `zan9a`, `chare3`) are normalized on the client and searched in parallel with the raw text.
