@@ -8,7 +8,7 @@ Public workspace: https://www.postman.com/tmaps-tn/tmaps-api
 
 ## Import
 
-The quickest way is the **Run in Postman** button above: it forks the collection and environment into your workspace. To import the files instead:
+The quickest way is the **Run in Postman** button above: it forks the collection into your workspace. Then add an `api_key` variable (your key) in the collection's **Variables** tab, or fork the **TMaps** environment from the public workspace. To import the files instead:
 
 1. In Postman, click **Import** and drop both files:
    - [`TMaps-API.postman_collection.json`](TMaps-API.postman_collection.json)
