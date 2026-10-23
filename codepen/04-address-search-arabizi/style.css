@@ -1,0 +1,14 @@
+html, body { height: 100%; margin: 0; font-family: system-ui, sans-serif; }
+#map { position: absolute; inset: 0; }
+.panel {
+  position: absolute; z-index: 1000; top: 12px; left: 12px; max-width: 320px;
+  background: #fff; border-radius: 8px; padding: 10px 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, .2); font-size: 14px;
+}
+.panel a { color: #0b63f6; }
+form { display: flex; gap: 6px; margin-top: 8px; }
+#q { flex: 1; padding: 6px 8px; border: 1px solid #ccd; border-radius: 6px; }
+#results { list-style: none; margin: 8px 0 0; padding: 0; max-height: 50vh; overflow: auto; }
+#results li { padding: 6px; border-radius: 6px; cursor: pointer; }
+#results li:hover, #results li.active { background: #eef3ff; }
+#results small { color: #667; }

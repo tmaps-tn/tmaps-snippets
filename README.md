@@ -26,6 +26,10 @@ Coming soon: static map, directions, isochrone, optimized route and distance mat
 
 Try the API without writing code: fork the collection from the [TMaps public workspace](https://www.postman.com/tmaps-tn/tmaps-api) or import the [files in postman/](postman/) (tiles, forward and reverse geocoding, nearby search), set your key and send. Each request comes with documented parameters, example responses and tests.
 
+## CodePen
+
+Prefer to play in the browser? Four examples are on [CodePen](https://codepen.io/tmaps), ready to fork: a [Leaflet map](https://codepen.io/tmaps/pen/KwWBabZ), [vector styles with MapLibre](https://codepen.io/tmaps/pen/yyMqgGK), an [OpenLayers map with a shareable view](https://codepen.io/tmaps/pen/zxZLNyy) and an [address search in French, Arabic and Arabizi](https://codepen.io/tmaps/pen/vExagbN). Their code is in [codepen/](codepen/).
+
 ## Repository layout
 
 ```
@@ -34,6 +38,7 @@ servers/go/       Go server (standard library only)
 servers/node/     Node.js server (no dependencies)
 servers/python/   Python server (standard library only)
 postman/          Postman collection and environment
+codepen/          Code of the CodePen examples (HTML, CSS, JS panels)
 pending/          Examples waiting for their API endpoint in production
 docker-compose.yml
 ```

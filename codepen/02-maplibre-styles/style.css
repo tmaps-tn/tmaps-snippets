@@ -1,0 +1,11 @@
+html, body { height: 100%; margin: 0; font-family: system-ui, sans-serif; }
+#map { position: absolute; inset: 0; }
+.panel {
+  position: absolute; z-index: 1000; top: 12px; left: 12px; max-width: 320px;
+  background: #fff; border-radius: 8px; padding: 10px 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, .2); font-size: 14px;
+}
+.panel a { color: #0b63f6; }
+#styles { display: flex; gap: 6px; margin: 8px 0; flex-wrap: wrap; }
+#styles button { border: 1px solid #ccd; background: #f6f7fb; border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+#styles button[aria-pressed="true"] { background: #0b63f6; color: #fff; border-color: #0b63f6; }
