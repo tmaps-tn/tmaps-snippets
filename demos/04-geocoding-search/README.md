@@ -15,3 +15,4 @@ GET https://api.tmaps.tn/geocoding/forward?q=Avenue%20Habib%20Bourguiba%2C%20Tun
 - Results update as you type (300 ms debounce) and favour places near the map center with `proximity`.
 - Old requests are cancelled with `AbortController` so they never overwrite newer results.
 - Only save coordinates when `confidence` is at least 0.85.
+- The point is in `geometry.location` (`lat`, `lng`).

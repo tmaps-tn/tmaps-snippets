@@ -1,6 +1,6 @@
 # 12 · Checkout address form
 
-A delivery address form for e-commerce: autocomplete, auto-filled commune, delegation, governorate and postcode, and a draggable pin to confirm the exact location.
+A delivery address form for e-commerce: autocomplete, auto-filled commune, delegation and governorate, and a draggable pin to confirm the exact location.
 
 **[Live demo](https://examples.tmaps.tn/12-checkout-address-form/)** · [Forward + reverse geocoding docs](https://www.tmaps.tn/documentation/api/geocoding/forward)
 

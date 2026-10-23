@@ -76,7 +76,7 @@
         <h2>Good to know</h2>
         <ul>
           <li><code>confidence</code> goes from 0 to 1. For deliveries or e-commerce, only save coordinates when it is at least 0.85 and ask the user to confirm otherwise.</li>
-          <li><code>components</code> gives the Tunisian administrative breakdown: <code>street</code>, <code>postcode</code>, <code>commune</code>, <code>delegation</code>, <code>governorate</code>.</li>
+          <li>The point is in <code>geometry.location</code> and <code>components</code> gives the Tunisian administrative breakdown: <code>street</code>, <code>commune</code>, <code>delegation</code>, <code>governorate</code>.</li>
           <li><code>type</code> filters results: <code>address</code>, <code>street</code>, <code>poi</code> or <code>locality</code>.</li>
         </ul>
         <p class="links">
@@ -102,6 +102,8 @@
     const marker = L.marker([0, 0], { icon: demo.pin() });
     let timer;
     let controller;
+    // Position d'un résultat : l'API renvoie geometry.location (repli sur lat/lng à la racine)
+    const position = (result) => result.geometry?.location ?? result;
 
     input.addEventListener('input', () => {
       clearTimeout(timer);
@@ -166,15 +168,16 @@
 
     function select(result, li) {
       list.querySelectorAll('li').forEach((item) => item.classList.toggle('active', item === li));
-      marker.setLatLng([result.lat, result.lng])
-        .bindPopup(`<b>${demo.escape(result.formatted)}</b><br>${result.lat.toFixed(5)}, ${result.lng.toFixed(5)}`)
+      const { lat, lng } = position(result);
+      marker.setLatLng([lat, lng])
+        .bindPopup(`<b>${demo.escape(result.formatted)}</b><br>${lat.toFixed(5)}, ${lng.toFixed(5)}`)
         .addTo(map)
         .openPopup();
       if (result.bbox) {
         const [minLng, minLat, maxLng, maxLat] = result.bbox;
         map.fitBounds([[minLat, minLng], [maxLat, maxLng]], { maxZoom: 17 });
       } else {
-        map.setView([result.lat, result.lng], 16);
+        map.setView([lat, lng], 16);
       }
     }
 

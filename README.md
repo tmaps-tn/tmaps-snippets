@@ -15,13 +15,10 @@ Ready-to-run, client-side code examples for the [TMaps](https://www.tmaps.tn) AP
 | 03 | [Vector map styles](demos/03-vector-maplibre-styles/) | Vector tiles | MapLibre GL | [Live](https://examples.tmaps.tn/03-vector-maplibre-styles/) |
 | 04 | [Address search](demos/04-geocoding-search/) | Forward geocoding | Leaflet | [Live](https://examples.tmaps.tn/04-geocoding-search/) |
 | 05 | [Address from a map click](demos/05-reverse-geocoding/) | Reverse geocoding | Leaflet | [Live](https://examples.tmaps.tn/05-reverse-geocoding/) |
-| 06 | [Static map image](demos/06-static-map/) | Static Maps | Leaflet | [Live](https://examples.tmaps.tn/06-static-map/) |
-| 07 | [Directions](demos/07-directions/) | Directions | Leaflet | [Live](https://examples.tmaps.tn/07-directions/) |
 | 08 | [Nearby places](demos/08-nearby-search/) | Nearby search | Leaflet | [Live](https://examples.tmaps.tn/08-nearby-search/) |
-| 09 | [Delivery zone](demos/09-isochrone/) | Isochrone | Leaflet | [Live](https://examples.tmaps.tn/09-isochrone/) |
-| 10 | [Optimized delivery route](demos/10-optimized-route/) | Optimized routing | Leaflet | [Live](https://examples.tmaps.tn/10-optimized-route/) |
-| 11 | [Nearest driver](demos/11-distance-matrix/) | Distance matrix | Leaflet | [Live](https://examples.tmaps.tn/11-distance-matrix/) |
 | 12 | [Checkout address form](demos/12-checkout-address-form/) | Forward + reverse geocoding | Leaflet | [Live](https://examples.tmaps.tn/12-checkout-address-form/) |
+
+Coming soon: static map, directions, isochrone, optimized route and distance matrix examples ([pending/](pending/)).
 
 ## Repository layout
 
@@ -30,6 +27,7 @@ demos/            Client-side examples (plain HTML, no build), published on GitH
 servers/go/       Go server (standard library only)
 servers/node/     Node.js server (no dependencies)
 servers/python/   Python server (standard library only)
+pending/          Examples waiting for their API endpoint in production
 docker-compose.yml
 ```
 

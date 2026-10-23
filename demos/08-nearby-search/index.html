@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Find nearby pharmacies, restaurants and banks – TMaps API example</title>
-  <meta name="description" content="Find points of interest around a location in Tunisia (pharmacies, hospitals, restaurants, banks, fuel stations…) sorted by distance with the TMaps Nearby Search API. Live JavaScript example.">
+  <title>Find nearby restaurants and schools – TMaps API example</title>
+  <meta name="description" content="Find restaurants and schools around a location in Tunisia, sorted by distance, with the TMaps Nearby Search API. Live JavaScript example with Leaflet.">
   <link rel="canonical" href="https://examples.tmaps.tn/08-nearby-search/">
   <meta property="og:title" content="Find nearby places in Tunisia – TMaps API example">
   <meta property="og:description" content="Points of interest around a location, sorted by distance, with the TMaps Nearby Search API.">
@@ -16,7 +16,7 @@
   {
     "@context": "https://schema.org",
     "@type": "TechArticle",
-    "headline": "Find nearby pharmacies, restaurants and banks",
+    "headline": "Find nearby restaurants and schools",
     "description": "Find points of interest around a location in Tunisia, sorted by distance, with the TMaps Nearby Search API.",
     "url": "https://examples.tmaps.tn/08-nearby-search/",
     "inLanguage": "en",
@@ -42,22 +42,14 @@
     <aside class="panel">
       <nav class="crumbs"><a href="../">TMaps API examples</a> / 08</nav>
       <h1>Nearby places search</h1>
-      <p class="lead">Find pharmacies, hospitals, restaurants, banks or fuel stations around a point in Tunisia. The TMaps Nearby Search API returns the places sorted by distance, with address, phone and opening hours when available.</p>
+      <p class="lead">Find restaurants or schools around a point in Tunisia. The TMaps Nearby Search API returns the places sorted by distance, with their address.</p>
 
       <div class="controls">
         <div class="row">
           <label class="field">Category
             <select id="categories">
-              <option value="pharmacy">Pharmacies</option>
-              <option value="hospital,health">Hospitals and health</option>
-              <option value="restaurant,cafe">Restaurants and cafés</option>
-              <option value="bank,atm">Banks and ATMs</option>
-              <option value="fuel">Fuel stations</option>
-              <option value="parking">Parking</option>
-              <option value="transit">Public transport</option>
-              <option value="school,education">Schools</option>
-              <option value="hotel">Hotels</option>
-              <option value="culture">Culture</option>
+              <option value="restaurant">Restaurants</option>
+              <option value="education">Schools and education</option>
             </select>
           </label>
           <label class="field">Radius
@@ -72,22 +64,21 @@
 
       <details class="request" open>
         <summary>API request</summary>
-        <pre id="request">GET https://api.tmaps.tn/geocoding/nearby?lat=36.8002&amp;lng=10.1815&amp;radius=1500&amp;categories=pharmacy&amp;api_key=YOUR_API_KEY</pre>
+        <pre id="request">GET https://api.tmaps.tn/geocoding/nearby?lat=36.8002&amp;lng=10.1815&amp;radius=1500&amp;categories=restaurant&amp;api_key=YOUR_API_KEY</pre>
       </details>
 
       <section class="about">
         <h2>How it works</h2>
         <ol>
           <li>The page sends <code>GET /geocoding/nearby</code> with the center (<code>lat</code>, <code>lng</code>), a <code>radius</code> in meters and <code>categories</code>.</li>
-          <li>Several categories separated by commas are combined with OR: <code>restaurant,cafe</code>.</li>
+          <li>Several categories separated by commas are combined with OR: <code>restaurant,education</code>.</li>
           <li>Results come back sorted by <code>distance</code>. Click one to show it on the map.</li>
         </ol>
         <h2>Good to know</h2>
         <ul>
           <li>The radius goes up to 10,000 m and <code>limit</code> up to 100 results.</li>
           <li>Add <code>q</code> to filter by name, for example <code>q=carrefour</code>.</li>
-          <li>Categories include <code>restaurant</code>, <code>cafe</code>, <code>pharmacy</code>, <code>hospital</code>, <code>bank</code>, <code>atm</code>, <code>fuel</code>, <code>parking</code>, <code>transit</code>, <code>school</code>, <code>hotel</code>, <code>shopping</code>, <code>culture</code>, <code>mosque</code> and more.</li>
-          <li><code>phone</code> and <code>opening_hours</code> are optional: check they exist before showing them.</li>
+                    <li><code>phone</code> and <code>opening_hours</code> are optional: check they exist before showing them.</li>
         </ul>
         <p class="links">
           <a href="https://www.tmaps.tn/documentation/api/geocoding/nearby">Nearby Search docs</a> ·

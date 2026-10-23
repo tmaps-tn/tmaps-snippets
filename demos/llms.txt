@@ -7,7 +7,7 @@ Key facts:
 - Authentication: `api_key` query parameter on every request (GET and POST). No Authorization header.
 - Browser keys are restricted by authorized domains (Origin/Referer). No wildcard: add each subdomain and localhost. HTTP (non-HTTPS) requests are rejected with 403.
 - Coordinates are WGS84 decimal degrees, `lat` / `lng`. Distances in meters, durations in seconds.
-- Geocoding results include `components`: street, postcode, commune, delegation, governorate, country.
+- Geocoding results give the point in `geometry.location` (`lat`, `lng`), a `formatted` address, a `confidence` score and `components`: street, commune, delegation, governorate, country.
 - Errors are JSON `{"error": "..."}` with standard HTTP codes (400, 401, 403, 404, 429, 5xx).
 
 ## Display a map
@@ -15,24 +15,16 @@ Key facts:
 - [01 Map with Leaflet](https://examples.tmaps.tn/01-raster-leaflet/): raster XYZ tiles `https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=…`, zoom 0–18.
 - [02 Map with OpenLayers](https://examples.tmaps.tn/02-raster-openlayers/): same tiles with `ol.source.XYZ` and a shareable view in the URL.
 - [03 Vector map styles with MapLibre GL](https://examples.tmaps.tn/03-vector-maplibre-styles/): styles `streets`, `dark`, `terrain`, `sunny` at `https://tiles.tmaps.tn/v-tile/{style}.json?api_key=…`.
-- [06 Static map image](https://examples.tmaps.tn/06-static-map/): `GET /maps/static` with `center`, `zoom`, `size` (max 1280×1280), `style` and repeatable `marker=lat,lng|color|label`.
 
 ## Find addresses and places
 
 - [04 Address search (forward geocoding)](https://examples.tmaps.tn/04-geocoding-search/): `GET /geocoding/forward?q=…&country=TN&limit=5&proximity=lat,lng`. Returns `confidence` (0–1); save coordinates when ≥ 0.85.
 - [05 Address from a map click (reverse geocoding)](https://examples.tmaps.tn/05-reverse-geocoding/): `GET /geocoding/reverse?lat=…&lng=…`. Returns the nearest address and its `distance` in meters.
-- [08 Nearby places](https://examples.tmaps.tn/08-nearby-search/): `GET /geocoding/nearby?lat=…&lng=…&radius=…&categories=pharmacy,hospital`. Radius up to 10,000 m, results sorted by distance.
-
-## Routes and travel times
-
-- [07 Directions](https://examples.tmaps.tn/07-directions/): `GET /routing/direction?from=lat,lng&to=lat,lng&profile=driving&geometry=geojson&steps=true`. Profiles: driving, walking, cycling, truck. POST with `waypoints` for up to 25 points.
-- [09 Delivery zone (isochrone)](https://examples.tmaps.tn/09-isochrone/): `POST /routing/isochrone` with `origin` and `contours` (`{time: min}` or `{distance: km}`, up to 4, max 60 min / 50 km). Returns a GeoJSON FeatureCollection.
-- [10 Optimized delivery route](https://examples.tmaps.tn/10-optimized-route/): `POST /routing/optimized` with `origin` and up to 50 `waypoints`. Returns `order`, the zero-based visiting order.
-- [11 Nearest driver (distance matrix)](https://examples.tmaps.tn/11-distance-matrix/): `POST /distance-matrix` with `origins` and `destinations` (max 25 × 25). `durations[i][j]` in seconds, `distances[i][j]` in meters.
+- [08 Nearby places](https://examples.tmaps.tn/08-nearby-search/): `GET /geocoding/nearby?lat=…&lng=…&radius=…&categories=restaurant`. Radius up to 10,000 m, results sorted by distance.
 
 ## Complete use cases
 
-- [12 Checkout address form](https://examples.tmaps.tn/12-checkout-address-form/): delivery address autocomplete with forward geocoding, auto-filled commune/delegation/governorate/postcode, and a draggable pin refined with reverse geocoding.
+- [12 Checkout address form](https://examples.tmaps.tn/12-checkout-address-form/): delivery address autocomplete with forward geocoding, auto-filled commune/delegation/governorate, and a draggable pin refined with reverse geocoding.
 
 ## Optional
 

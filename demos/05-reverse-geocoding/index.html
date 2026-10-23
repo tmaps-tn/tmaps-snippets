@@ -64,7 +64,7 @@
         <ol>
           <li>A click on the map gives a latitude and longitude.</li>
           <li>The page sends <code>GET /geocoding/reverse</code> with <code>lat</code>, <code>lng</code> and <code>lang</code>.</li>
-          <li>The API snaps to the nearest relevant street or building and returns its address. <code>distance</code> tells you how far it is, in meters, from the clicked point.</li>
+          <li>The API snaps to the nearest relevant street or building and returns its address, with the point in <code>geometry.location</code>. <code>distance</code> tells you how far it is, in meters, from the clicked point.</li>
         </ol>
         <h2>Good to know</h2>
         <ul>
@@ -93,6 +93,8 @@
     const clicked = L.circleMarker([0, 0], { radius: 5, color: '#5b6178' });
     const found = L.marker([0, 0], { icon: demo.pin() });
     let last = { lat: 36.8002, lng: 10.1815 };
+    // Position d'un résultat : l'API renvoie geometry.location (repli sur lat/lng à la racine)
+    const position = (result) => result.geometry?.location ?? result;
 
     map.on('click', (event) => lookup(event.latlng));
     document.getElementById('lang').addEventListener('change', () => lookup(last));
@@ -126,7 +128,8 @@
 
     function render(result) {
       const c = result.components ?? {};
-      found.setLatLng([result.lat, result.lng])
+      const { lat, lng } = position(result);
+      found.setLatLng([lat, lng])
         .bindPopup(`<b>${demo.escape(result.formatted)}</b>`)
         .addTo(map)
         .openPopup();
@@ -135,7 +138,7 @@
         ['Street', c.street], ['Postcode', c.postcode], ['Commune', c.commune],
         ['Delegation', c.delegation], ['Governorate', c.governorate], ['Type', result.type],
         ['Snapped', demo.formatDistance(result.distance ?? 0)],
-        ['Coordinates', `${result.lat.toFixed(5)}, ${result.lng.toFixed(5)}`],
+        ['Coordinates', `${lat.toFixed(5)}, ${lng.toFixed(5)}`],
       ];
       document.getElementById('output').innerHTML = `
         <p><b>${demo.escape(result.formatted)}</b></p>
