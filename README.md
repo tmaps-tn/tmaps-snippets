@@ -26,9 +26,9 @@ Coming soon: static map, directions, isochrone, optimized route and distance mat
 
 Try the API without writing code: fork the collection from the [TMaps public workspace](https://www.postman.com/tmaps-tn/tmaps-api) or import the [files in postman/](postman/) (tiles, forward and reverse geocoding, nearby search), set your key and send. Each request comes with documented parameters, example responses and tests.
 
-## CodePen
+## CodePen and JSFiddle
 
-Prefer to play in the browser? Four examples are on [CodePen](https://codepen.io/tmaps), ready to fork: a [Leaflet map](https://codepen.io/tmaps/pen/KwWBabZ), [vector styles with MapLibre](https://codepen.io/tmaps/pen/yyMqgGK), an [OpenLayers map with a shareable view](https://codepen.io/tmaps/pen/zxZLNyy) and an [address search in French, Arabic and Arabizi](https://codepen.io/tmaps/pen/vExagbN). Their code is in [codepen/](codepen/).
+Prefer to play in the browser? Four examples are on [CodePen](https://codepen.io/tmaps) and JSFiddle, ready to fork: a [Leaflet map](https://codepen.io/tmaps/pen/KwWBabZ), [vector styles with MapLibre](https://codepen.io/tmaps/pen/yyMqgGK), an [OpenLayers map with a shareable view](https://codepen.io/tmaps/pen/zxZLNyy) and an [address search in French, Arabic and Arabizi](https://codepen.io/tmaps/pen/vExagbN). The same examples on JSFiddle: [Leaflet](https://jsfiddle.net/Tmaps/8wyrz5j9/), [MapLibre](https://jsfiddle.net/Tmaps/1ej8bg92/), [OpenLayers](https://jsfiddle.net/Tmaps/vw0smpe6/) and [address search](https://jsfiddle.net/Tmaps/dt4scn98/). Their code is in [codepen/](codepen/).
 
 ## Repository layout
 
