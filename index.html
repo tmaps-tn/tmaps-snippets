@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TMaps API Examples – Maps, Geocoding &amp; Routing for Tunisia</title>
+  <meta name="description" content="Live, client-side code examples for the TMaps APIs: map tiles, geocoding, routing and isochrones in Tunisia with Leaflet, OpenLayers and MapLibre GL.">
+  <link rel="canonical" href="https://tmaps-tn.github.io/tmaps-snippets/">
+  <meta property="og:title" content="TMaps API Examples">
+  <meta property="og:description" content="Live code examples for the TMaps maps, geocoding and routing APIs.">
+  <meta property="og:url" content="https://tmaps-tn.github.io/tmaps-snippets/">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="https://storage.googleapis.com/tmaps-public-assets/favico.ico?v0">
+
+  <style>
+    :root { --bg: #f7f8fc; --card: #fff; --text: #14182b; --muted: #5b6178; --accent: #2e47f0; --border: #e3e6f0; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #0e1120; --card: #171b2e; --text: #eef0f8; --muted: #a2a8c0; --accent: #7d8cff; --border: #262b44; }
+    }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, sans-serif; }
+    main { max-width: 960px; margin: 0 auto; padding: 48px 16px; }
+    h1 { margin: 0 0 8px; font-size: 2rem; }
+    p.lead { margin: 0 0 32px; color: var(--muted); }
+    a { color: var(--accent); }
+    ul { list-style: none; padding: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+    li a { display: block; height: 100%; box-sizing: border-box; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--card); color: inherit; text-decoration: none; }
+    li a:hover { border-color: var(--accent); }
+    .num { color: var(--accent); font-weight: 600; }
+    .meta { color: var(--muted); font-size: 14px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>TMaps API Examples</h1>
+    <p class="lead">
+      Client-side examples for the <a href="https://www.tmaps.tn">TMaps</a> maps, geocoding and routing APIs.
+      Source on <a href="https://github.com/tmaps-tn/tmaps-snippets">GitHub</a> ·
+      <a href="https://www.tmaps.tn/documentation">API documentation</a>
+    </p>
+    <ul>
+      <li><a href="01-raster-leaflet/"><span class="num">01</span> Raster tiles with Leaflet<br><span class="meta">Raster tiles · Leaflet</span></a></li>
+      <li><a href="02-raster-openlayers/"><span class="num">02</span> Raster tiles with OpenLayers<br><span class="meta">Raster tiles · OpenLayers</span></a></li>
+      <li><a href="03-vector-maplibre-styles/"><span class="num">03</span> Vector tiles, 4 styles<br><span class="meta">Vector tiles · MapLibre GL</span></a></li>
+    </ul>
+  </main>
+</body>
+</html>

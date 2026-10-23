@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Carte OpenLayers avec les tuiles raster TMaps</title>
+  <meta name="description" content="Afficher une carte de la Tunisie avec OpenLayers et les tuiles raster XYZ TMaps, avec position conservée dans l'URL.">
+  <link rel="canonical" href="https://tmaps-tn.github.io/tmaps-snippets/02-raster-openlayers/">
+  <meta property="og:title" content="Carte OpenLayers avec les tuiles raster TMaps">
+  <meta property="og:description" content="Afficher une carte de la Tunisie avec OpenLayers et les tuiles raster XYZ TMaps.">
+  <meta property="og:url" content="https://tmaps-tn.github.io/tmaps-snippets/02-raster-openlayers/">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="https://storage.googleapis.com/tmaps-public-assets/favico.ico?v0">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.4.0/ol.css">
+  <script src="https://cdn.jsdelivr.net/npm/ol@10.4.0/dist/ol.js"></script>
+  <script src="../shared/config.js"></script>
+
+  <style>
+    html, body, #map { height: 100%; margin: 0; }
+    .notice {
+      position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 1000;
+      padding: 8px 14px; border-radius: 8px; background: #b42318; color: #fff;
+      font: 14px/1.4 system-ui, sans-serif; display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="notice" id="notice"></div>
+
+  <script>
+    const API_KEY = window.TMAPS_API_KEY || 'YOUR_API_KEY';
+
+    // Position initiale lue depuis l'URL : #zoom,lat,lng
+    const [zoom = 12, lat = 36.8002, lng = 10.1815] = location.hash.slice(1).split(',').filter(Boolean).map(Number);
+
+    const source = new ol.source.XYZ({
+      url: `https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=${API_KEY}`,
+      maxZoom: 18,
+      attributions: '© <a href="https://www.tmaps.tn">TMaps</a>',
+    });
+    source.on('tileloaderror', () => showNotice('Tuiles indisponibles : vérifiez votre clé API et vos domaines autorisés.'));
+
+    const map = new ol.Map({
+      target: 'map',
+      layers: [new ol.layer.Tile({ source })],
+      view: new ol.View({ center: ol.proj.fromLonLat([lng, lat]), zoom, maxZoom: 18 }),
+    });
+
+    // Partage de la vue courante via l'URL
+    map.on('moveend', () => {
+      const view = map.getView();
+      const [lon, la] = ol.proj.toLonLat(view.getCenter());
+      history.replaceState(null, '', `#${view.getZoom().toFixed(2)},${la.toFixed(6)},${lon.toFixed(6)}`);
+    });
+
+    function showNotice(message) {
+      const el = document.getElementById('notice');
+      el.textContent = message;
+      el.style.display = 'block';
+    }
+  </script>
+</body>
+</html>

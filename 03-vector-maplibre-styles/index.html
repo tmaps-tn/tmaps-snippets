@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tuiles vectorielles TMaps avec MapLibre GL</title>
+  <meta name="description" content="Carte vectorielle MapLibre GL avec les 4 styles TMaps (streets, dark, terrain, sunny) et changement de style à chaud.">
+  <link rel="canonical" href="https://tmaps-tn.github.io/tmaps-snippets/03-vector-maplibre-styles/">
+  <meta property="og:title" content="Tuiles vectorielles TMaps avec MapLibre GL">
+  <meta property="og:description" content="Les 4 styles vectoriels TMaps (streets, dark, terrain, sunny) avec MapLibre GL.">
+  <meta property="og:url" content="https://tmaps-tn.github.io/tmaps-snippets/03-vector-maplibre-styles/">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="https://storage.googleapis.com/tmaps-public-assets/favico.ico?v0">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.6.0/dist/maplibre-gl.css">
+  <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+  <script src="../shared/config.js"></script>
+
+  <style>
+    html, body, #map { height: 100%; margin: 0; }
+    .styles {
+      position: absolute; top: 12px; left: 12px; z-index: 1; display: flex; gap: 4px;
+      padding: 4px; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(0, 25, 75, .15);
+      font: 14px system-ui, sans-serif;
+    }
+    .styles button {
+      border: 0; border-radius: 6px; padding: 6px 12px; background: none; cursor: pointer; font: inherit;
+    }
+    .styles button[aria-pressed="true"] { background: #2e47f0; color: #fff; }
+    .notice {
+      position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); z-index: 1;
+      padding: 8px 14px; border-radius: 8px; background: #b42318; color: #fff;
+      font: 14px/1.4 system-ui, sans-serif; display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="styles" id="styles"></div>
+  <div class="notice" id="notice"></div>
+
+  <script>
+    const API_KEY = window.TMAPS_API_KEY || 'YOUR_API_KEY';
+    const STYLES = ['streets', 'dark', 'terrain', 'sunny'];
+    const styleUrl = (name) => `https://tiles.tmaps.tn/v-tile/${name}.json?api_key=${API_KEY}`;
+
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: styleUrl('streets'),
+      center: [10.1815, 36.8002], // Tunis
+      zoom: 12,
+      maxZoom: 18,
+    });
+    map.addControl(new maplibregl.NavigationControl(), 'top-right');
+    map.on('error', () => showNotice('Style indisponible : vérifiez votre clé API et vos domaines autorisés.'));
+
+    // Un bouton par style ; setStyle() change le style sans recréer la carte
+    const bar = document.getElementById('styles');
+    for (const name of STYLES) {
+      const button = document.createElement('button');
+      button.textContent = name;
+      button.setAttribute('aria-pressed', name === 'streets');
+      button.addEventListener('click', () => {
+        map.setStyle(styleUrl(name));
+        bar.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', b === button));
+      });
+      bar.append(button);
+    }
+
+    function showNotice(message) {
+      const el = document.getElementById('notice');
+      el.textContent = message;
+      el.style.display = 'block';
+    }
+  </script>
+</body>
+</html>

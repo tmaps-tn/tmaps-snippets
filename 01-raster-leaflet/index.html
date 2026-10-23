@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Carte Leaflet avec les tuiles raster TMaps</title>
+  <meta name="description" content="Afficher une carte de la Tunisie avec Leaflet et les tuiles raster TMaps. Exemple HTML autonome, sans build.">
+  <link rel="canonical" href="https://tmaps-tn.github.io/tmaps-snippets/01-raster-leaflet/">
+  <meta property="og:title" content="Carte Leaflet avec les tuiles raster TMaps">
+  <meta property="og:description" content="Afficher une carte de la Tunisie avec Leaflet et les tuiles raster TMaps.">
+  <meta property="og:url" content="https://tmaps-tn.github.io/tmaps-snippets/01-raster-leaflet/">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="https://storage.googleapis.com/tmaps-public-assets/favico.ico?v0">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../shared/config.js"></script>
+
+  <style>
+    html, body, #map { height: 100%; margin: 0; }
+    .notice {
+      position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 1000;
+      padding: 8px 14px; border-radius: 8px; background: #b42318; color: #fff;
+      font: 14px/1.4 system-ui, sans-serif; display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="notice" id="notice"></div>
+
+  <script>
+    const API_KEY = window.TMAPS_API_KEY || 'YOUR_API_KEY';
+
+    const map = L.map('map').setView([36.8002, 10.1815], 12); // Tunis
+
+    L.tileLayer(`https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=${API_KEY}`, {
+      maxZoom: 18,
+      attribution: '© <a href="https://www.tmaps.tn">TMaps</a>',
+    })
+      .on('tileerror', () => showNotice('Tuiles indisponibles : vérifiez votre clé API et vos domaines autorisés.'))
+      .addTo(map);
+
+    function showNotice(message) {
+      const el = document.getElementById('notice');
+      el.textContent = message;
+      el.style.display = 'block';
+    }
+  </script>
+</body>
+</html>

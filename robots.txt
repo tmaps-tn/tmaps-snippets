@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tmaps-tn.github.io/tmaps-snippets/sitemap.xml
