@@ -4,7 +4,7 @@ Ready-to-run Postman collection for the [TMaps](https://www.tmaps.tn) APIs: map 
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://god.gw.postman.com/run-collection/59164577-39c61a9a-5dec-4a19-bfb0-78e040babbe5?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D59164577-39c61a9a-5dec-4a19-bfb0-78e040babbe5%26entityType%3Dcollection%26workspaceId%3Dd930590d-cd34-4179-bf0c-14ef875c22af)
 
-Public workspace: https://www.postman.com/tmapstn-6735293/tmaps-api
+Public workspace: https://www.postman.com/tmaps-tn/tmaps-api
 
 ## Import
 
