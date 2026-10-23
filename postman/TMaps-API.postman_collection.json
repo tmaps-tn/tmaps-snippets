@@ -1,0 +1,582 @@
+{
+  "info": {
+    "_postman_id": "bed9a41c-1819-546a-be62-e7b0004a9290",
+    "name": "TMaps API",
+    "description": "Maps, geocoding and routing APIs with worldwide coverage and extra detail for Tunisia.\n\n## Get started\n1. Create an API key in the [TMaps console](https://app.tmaps.tn).\n2. Import the **TMaps** environment, set `api_key` and select the environment.\n3. Run **Geocoding → Forward geocoding**: it saves the result's coordinates for the other requests.\n\n## Authentication\nEvery request sends the key in the `api_key` query parameter. It is set once on the collection (Authorization tab) and inherited by all requests. TMaps does not use an `Authorization` header.\n\nPostman calls the API from a server context (no `Origin` header), so the key's authorized domains don't apply here. For backend use, create a dedicated key with no authorized domain: it works from your servers and is rejected in browsers if it ever leaks.\n\n## Conventions\n- JSON responses, UTF-8. Coordinates in WGS84 decimal degrees (`lat`, `lng`). Distances in meters, durations in seconds.\n- Errors return `{\"error\": \"...\"}` with standard HTTP codes: 400 bad parameter, 401 missing or revoked key, 403 domain not authorized, 404 not found, 429 burst protection, 5xx server error.\n\n## Links\n- Documentation: https://www.tmaps.tn/documentation\n- Live examples: https://examples.tmaps.tn/\n- Source: https://github.com/tmaps-tn/tmaps-snippets",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "api_key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{api_key}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "query",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.tmaps.tn"
+    },
+    {
+      "key": "tilesUrl",
+      "value": "https://tiles.tmaps.tn"
+    },
+    {
+      "key": "lat",
+      "value": "36.8002",
+      "description": "Updated by Forward geocoding."
+    },
+    {
+      "key": "lng",
+      "value": "10.1815",
+      "description": "Updated by Forward geocoding."
+    },
+    {
+      "key": "style",
+      "value": "streets",
+      "description": "streets, dark, terrain or sunny."
+    }
+  ],
+  "item": [
+    {
+      "name": "Maps",
+      "description": "Raster and vector map tiles.",
+      "item": [
+        {
+          "name": "Raster tile (PNG)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{tilesUrl}}/r-tile/:z/:x/:y",
+              "host": [
+                "{{tilesUrl}}"
+              ],
+              "path": [
+                "r-tile",
+                ":z",
+                ":x",
+                ":y"
+              ],
+              "variable": [
+                {
+                  "key": "z",
+                  "value": "12",
+                  "description": "Zoom level, 0 to 18."
+                },
+                {
+                  "key": "x",
+                  "value": "2163",
+                  "description": "Tile column (XYZ scheme)."
+                },
+                {
+                  "key": "y",
+                  "value": "1585",
+                  "description": "Tile row (XYZ scheme)."
+                }
+              ]
+            },
+            "description": "256 × 256 PNG tile following the standard XYZ scheme. Use the URL template in Leaflet, OpenLayers, MapLibre GL or any mobile SDK that supports XYZ layers:\n\n`https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=YOUR_API_KEY`\n\nDocs: https://www.tmaps.tn/documentation/api/raster-tiles · Live example: https://examples.tmaps.tn/01-raster-leaflet/"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns a PNG image', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('image/png'));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Vector style (MapLibre)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{tilesUrl}}/v-tile/{{style}}.json",
+              "host": [
+                "{{tilesUrl}}"
+              ],
+              "path": [
+                "v-tile",
+                "{{style}}.json"
+              ]
+            },
+            "description": "Map style in the Mapbox Style Specification, ready for MapLibre GL JS or MapLibre Native. It references the vector tile sources, glyphs and sprites.\n\nChange the `style` collection variable to `streets`, `dark`, `terrain` or `sunny`.\n\nDocs: https://www.tmaps.tn/documentation/api/vector-tiles · Live example: https://examples.tmaps.tn/03-vector-maplibre-styles/"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 401) console.warn('401: set api_key in the TMaps environment.');",
+                  "pm.test('Is a Mapbox Style document', () => {",
+                  "  const style = pm.response.json();",
+                  "  pm.expect(style.version).to.eql(8);",
+                  "  pm.expect(style.sources).to.be.an('object');",
+                  "  pm.expect(style.layers).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Geocoding",
+      "description": "Addresses to coordinates, coordinates to addresses, and places around a point.",
+      "item": [
+        {
+          "name": "Forward geocoding",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/geocoding/forward?q=Avenue Habib Bourguiba, Tunis&country=TN&limit=5&lang=fr",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "geocoding",
+                "forward"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "Avenue Habib Bourguiba, Tunis",
+                  "description": "Required. Free text: address, street, place or commune."
+                },
+                {
+                  "key": "country",
+                  "value": "TN",
+                  "description": "ISO 3166-1 alpha-2 country code. Default: TN."
+                },
+                {
+                  "key": "limit",
+                  "value": "5",
+                  "description": "Maximum number of results, 1 to 20. Default: 5."
+                },
+                {
+                  "key": "lang",
+                  "value": "fr",
+                  "description": "Language of labels: fr, en or ar. Default: fr."
+                },
+                {
+                  "key": "proximity",
+                  "value": "36.8002,10.1815",
+                  "description": "lat,lng to favour results near a point (e.g. the user's position).",
+                  "disabled": true
+                },
+                {
+                  "key": "bbox",
+                  "value": "10.05,36.70,10.35,36.95",
+                  "description": "minLng,minLat,maxLng,maxLat to restrict the search to an area.",
+                  "disabled": true
+                },
+                {
+                  "key": "type",
+                  "value": "street",
+                  "description": "Filter by type: address, street, poi, locality.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Turns a free-text address into GPS coordinates, with a confidence score and the Tunisian administrative breakdown (commune, delegation, governorate).\n\nEach result gives the point in `geometry.location` (`lat`, `lng`), a `formatted` address, a `confidence` between 0 and 1 and `components`.\n\nThe test script saves the first result's coordinates in the `lat` and `lng` collection variables, so you can run **Reverse geocoding** and **Nearby search** right after.\n\nDocs: https://www.tmaps.tn/documentation/api/geocoding/forward · Live example: https://examples.tmaps.tn/04-geocoding-search/"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 401) console.warn('401: set api_key in the TMaps environment.');",
+                  "const results = pm.response.json().results ?? [];",
+                  "pm.test('Returns at least one result', () => pm.expect(results).to.be.an('array').that.is.not.empty);",
+                  "if (results.length) {",
+                  "  // Point du résultat : geometry.location (repli sur lat/lng à la racine)",
+                  "  const { lat, lng } = results[0].geometry?.location ?? results[0];",
+                  "  pm.collectionVariables.set('lat', lat);",
+                  "  pm.collectionVariables.set('lng', lng);",
+                  "  console.log(`Saved ${results[0].formatted} → lat=${lat}, lng=${lng}`);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 – Avenue Habib Bourguiba, Tunis",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/geocoding/forward?q=Avenue Habib Bourguiba, Tunis&country=TN&limit=5&lang=fr",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "geocoding",
+                    "forward"
+                  ],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "Avenue Habib Bourguiba, Tunis",
+                      "description": "Required. Free text: address, street, place or commune."
+                    },
+                    {
+                      "key": "country",
+                      "value": "TN",
+                      "description": "ISO 3166-1 alpha-2 country code. Default: TN."
+                    },
+                    {
+                      "key": "limit",
+                      "value": "5",
+                      "description": "Maximum number of results, 1 to 20. Default: 5."
+                    },
+                    {
+                      "key": "lang",
+                      "value": "fr",
+                      "description": "Language of labels: fr, en or ar. Default: fr."
+                    },
+                    {
+                      "key": "proximity",
+                      "value": "36.8002,10.1815",
+                      "description": "lat,lng to favour results near a point (e.g. the user's position).",
+                      "disabled": true
+                    },
+                    {
+                      "key": "bbox",
+                      "value": "10.05,36.70,10.35,36.95",
+                      "description": "minLng,minLat,maxLng,maxLat to restrict the search to an area.",
+                      "disabled": true
+                    },
+                    {
+                      "key": "type",
+                      "value": "street",
+                      "description": "Filter by type: address, street, poi, locality.",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "Turns a free-text address into GPS coordinates, with a confidence score and the Tunisian administrative breakdown (commune, delegation, governorate).\n\nEach result gives the point in `geometry.location` (`lat`, `lng`), a `formatted` address, a `confidence` between 0 and 1 and `components`.\n\nThe test script saves the first result's coordinates in the `lat` and `lng` collection variables, so you can run **Reverse geocoding** and **Nearby search** right after.\n\nDocs: https://www.tmaps.tn/documentation/api/geocoding/forward · Live example: https://examples.tmaps.tn/04-geocoding-search/"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\n  \"status\": \"OK\",\n  \"query\": \"Avenue Habib Bourguiba, Tunis\",\n  \"results\": [\n    {\n      \"place_id\": \"tmaps_road_9Jx6veprY3\",\n      \"formatted\": \"Avenue Habib Bourguiba, Lac de Tunis, Bab El Bhar, Tunis, Tunisie\",\n      \"name\": \"Avenue Habib Bourguiba\",\n      \"type\": \"street\",\n      \"geometry\": {\n        \"location\": {\n          \"lat\": 36.80060045491796,\n          \"lng\": 10.191012134812192\n        },\n        \"location_type\": \"GEOMETRIC_CENTER\"\n      },\n      \"confidence\": 0.8,\n      \"types\": [\n        \"route\",\n        \"street_address\"\n      ],\n      \"components\": {\n        \"street\": \"Avenue Habib Bourguiba\",\n        \"postcode\": \"Tunis\",\n        \"commune\": \"Lac de Tunis\",\n        \"delegation\": \"Bab El Bhar\",\n        \"governorate\": \"Tunis\",\n        \"country\": \"TN\"\n      },\n      \"bbox\": [\n        10.1891136,\n        36.80034889982383,\n        10.1928909,\n        36.800927199823896\n      ],\n      \"plus_code\": {\n        \"global_code\": \"8F8GR52R+78\",\n        \"compound_code\": \"R52R+78 Bab El Bhar, Tunis\"\n      }\n    },\n    {\n      \"place_id\": \"tmaps_road_x414a04JVd\",\n      \"formatted\": \"Avenue Habib Bourguiba, Habib Thameur, Bab El Bhar, Tunis, Tunisie\",\n      \"name\": \"Avenue Habib Bourguiba\",\n      \"type\": \"street\",\n      \"geometry\": {\n        \"location\": {\n          \"lat\": 36.800868411143476,\n          \"lng\": 10.191346882293725\n        },\n        \"location_type\": \"GEOMETRIC_CENTER\"\n      },\n      \"confidence\": 0.8,\n      \"types\": [\n        \"route\",\n        \"street_address\"\n      ],\n      \"components\": {\n        \"street\": \"Avenue Habib Bourguiba\",\n        \"postcode\": \"Tunis\",\n        \"commune\": \"Habib Thameur\",\n        \"delegation\": \"Bab El Bhar\",\n        \"governorate\": \"Tunis\",\n        \"country\": \"TN\"\n      },\n      \"bbox\": [\n        10.1890732,\n        36.800650399823866,\n        10.1936133,\n        36.801146499823915\n      ],\n      \"plus_code\": {\n        \"global_code\": \"8F8GR52R+8J\",\n        \"compound_code\": \"R52R+8J Bab El Bhar, Tunis\"\n      }\n    }\n  ],\n  \"count\": 2,\n  \"meta\": {\n    \"processing_time_ms\": 118,\n    \"provider\": \"TMaps Geocoding API v1\",\n    \"attribution\": \"© TMaps.tn | Data © OpenStreetMap contributors\"\n  }\n}"
+            },
+            {
+              "name": "400 – Missing q",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/geocoding/forward",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "geocoding",
+                    "forward"
+                  ],
+                  "query": []
+                },
+                "description": "Turns a free-text address into GPS coordinates, with a confidence score and the Tunisian administrative breakdown (commune, delegation, governorate).\n\nEach result gives the point in `geometry.location` (`lat`, `lng`), a `formatted` address, a `confidence` between 0 and 1 and `components`.\n\nThe test script saves the first result's coordinates in the `lat` and `lng` collection variables, so you can run **Reverse geocoding** and **Nearby search** right after.\n\nDocs: https://www.tmaps.tn/documentation/api/geocoding/forward · Live example: https://examples.tmaps.tn/04-geocoding-search/"
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\n  \"error\": \"parameter 'q' is required\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Reverse geocoding",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/geocoding/reverse?lat={{lat}}&lng={{lng}}&lang=fr",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "geocoding",
+                "reverse"
+              ],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "{{lat}}",
+                  "description": "Required. Latitude, WGS84 decimal degrees."
+                },
+                {
+                  "key": "lng",
+                  "value": "{{lng}}",
+                  "description": "Required. Longitude, WGS84 decimal degrees."
+                },
+                {
+                  "key": "lang",
+                  "value": "fr",
+                  "description": "Language of the address: fr, en or ar. Default: fr."
+                },
+                {
+                  "key": "type",
+                  "value": "locality",
+                  "description": "Target type: address, street, poi, locality.",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "1",
+                  "description": "Maximum number of results, 1 to 5. Default: 1.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Turns GPS coordinates into the nearest postal address and its commune, delegation and governorate.\n\nThe API snaps to the nearest relevant street, building or place: `distance` is the gap in meters between your point and the result. A `404` means no address was found nearby.\n\nUses the `lat` / `lng` collection variables (Tunis center by default, or the last **Forward geocoding** result).\n\nDocs: https://www.tmaps.tn/documentation/api/geocoding/reverse · Live example: https://examples.tmaps.tn/05-reverse-geocoding/"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 401) console.warn('401: set api_key in the TMaps environment.');",
+                  "pm.test('Returns an address', () => pm.expect(pm.response.json().results[0].formatted).to.be.a('string'));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 – Tunis center",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/geocoding/reverse?lat={{lat}}&lng={{lng}}&lang=fr",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "geocoding",
+                    "reverse"
+                  ],
+                  "query": [
+                    {
+                      "key": "lat",
+                      "value": "{{lat}}",
+                      "description": "Required. Latitude, WGS84 decimal degrees."
+                    },
+                    {
+                      "key": "lng",
+                      "value": "{{lng}}",
+                      "description": "Required. Longitude, WGS84 decimal degrees."
+                    },
+                    {
+                      "key": "lang",
+                      "value": "fr",
+                      "description": "Language of the address: fr, en or ar. Default: fr."
+                    },
+                    {
+                      "key": "type",
+                      "value": "locality",
+                      "description": "Target type: address, street, poi, locality.",
+                      "disabled": true
+                    },
+                    {
+                      "key": "limit",
+                      "value": "1",
+                      "description": "Maximum number of results, 1 to 5. Default: 1.",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "Turns GPS coordinates into the nearest postal address and its commune, delegation and governorate.\n\nThe API snaps to the nearest relevant street, building or place: `distance` is the gap in meters between your point and the result. A `404` means no address was found nearby.\n\nUses the `lat` / `lng` collection variables (Tunis center by default, or the last **Forward geocoding** result).\n\nDocs: https://www.tmaps.tn/documentation/api/geocoding/reverse · Live example: https://examples.tmaps.tn/05-reverse-geocoding/"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\n  \"status\": \"OK\",\n  \"query\": \"lat: 36.800200, lng: 10.181500\",\n  \"results\": [\n    {\n      \"place_id\": \"tmaps_poi_P8EvRrrpYv\",\n      \"formatted\": \"Banque de l'Habitat, Bab El Bhar, Tunis, Tunisie\",\n      \"name\": \"Banque de l'Habitat\",\n      \"type\": \"poi\",\n      \"geometry\": {\n        \"location\": {\n          \"lat\": 36.8001006998238,\n          \"lng\": 10.1815402\n        },\n        \"location_type\": \"GEOMETRIC_CENTER\"\n      },\n      \"confidence\": 0.75,\n      \"distance\": 11.6,\n      \"types\": [\n        \"point_of_interest\",\n        \"establishment\"\n      ],\n      \"components\": {\n        \"commune\": \"Habib Thameur\",\n        \"delegation\": \"Bab El Bhar\",\n        \"governorate\": \"Tunis\",\n        \"country\": \"TN\"\n      },\n      \"bbox\": [\n        10.1810402,\n        36.7996006998238,\n        10.182040200000001,\n        36.8006006998238\n      ],\n      \"plus_code\": {\n        \"global_code\": \"8F8GR52J+47\",\n        \"compound_code\": \"R52J+47 Bab El Bhar, Tunis\"\n      }\n    }\n  ],\n  \"count\": 1,\n  \"meta\": {\n    \"processing_time_ms\": 63,\n    \"provider\": \"TMaps Geocoding API v1\",\n    \"attribution\": \"© TMaps.tn | Data © OpenStreetMap contributors\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Nearby search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/geocoding/nearby?lat={{lat}}&lng={{lng}}&radius=1000&categories=restaurant&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "geocoding",
+                "nearby"
+              ],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "{{lat}}",
+                  "description": "Required. Latitude of the search center."
+                },
+                {
+                  "key": "lng",
+                  "value": "{{lng}}",
+                  "description": "Required. Longitude of the search center."
+                },
+                {
+                  "key": "radius",
+                  "value": "1000",
+                  "description": "Required. Search radius in meters, up to 10000."
+                },
+                {
+                  "key": "categories",
+                  "value": "restaurant",
+                  "description": "Comma-separated categories, combined with OR. Categories returning data today: restaurant, education."
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Maximum number of results, 1 to 100. Default: 20."
+                },
+                {
+                  "key": "q",
+                  "value": "cafe",
+                  "description": "Filter on the place name.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Finds points of interest around a point, sorted by distance.\n\nEach result has `id`, `name`, `category`, `lat`, `lng`, `distance` (meters) and `address`.\n\nDocs: https://www.tmaps.tn/documentation/api/geocoding/nearby · Live example: https://examples.tmaps.tn/08-nearby-search/"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 401) console.warn('401: set api_key in the TMaps environment.');",
+                  "const places = pm.response.json().results ?? [];",
+                  "pm.test('Results are sorted by distance', () => {",
+                  "  const distances = places.map((p) => p.distance);",
+                  "  pm.expect(distances).to.eql([...distances].sort((a, b) => a - b));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 – Restaurants within 500 m",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/geocoding/nearby?lat={{lat}}&lng={{lng}}&radius=1000&categories=restaurant&limit=10",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "geocoding",
+                    "nearby"
+                  ],
+                  "query": [
+                    {
+                      "key": "lat",
+                      "value": "{{lat}}",
+                      "description": "Required. Latitude of the search center."
+                    },
+                    {
+                      "key": "lng",
+                      "value": "{{lng}}",
+                      "description": "Required. Longitude of the search center."
+                    },
+                    {
+                      "key": "radius",
+                      "value": "1000",
+                      "description": "Required. Search radius in meters, up to 10000."
+                    },
+                    {
+                      "key": "categories",
+                      "value": "restaurant",
+                      "description": "Comma-separated categories, combined with OR. Categories returning data today: restaurant, education."
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10",
+                      "description": "Maximum number of results, 1 to 100. Default: 20."
+                    },
+                    {
+                      "key": "q",
+                      "value": "cafe",
+                      "description": "Filter on the place name.",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "Finds points of interest around a point, sorted by distance.\n\nEach result has `id`, `name`, `category`, `lat`, `lng`, `distance` (meters) and `address`.\n\nDocs: https://www.tmaps.tn/documentation/api/geocoding/nearby · Live example: https://examples.tmaps.tn/08-nearby-search/"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\n  \"query\": {\n    \"lat\": 36.8002,\n    \"lng\": 10.1815,\n    \"radius\": 500\n  },\n  \"count\": 3,\n  \"results\": [\n    {\n      \"id\": \"tmaps_poi_wKdB6rUnGu\",\n      \"name\": \"Baguette & Baguette\",\n      \"category\": \"restaurant\",\n      \"lat\": 36.80043949982384,\n      \"lng\": 10.1814996,\n      \"distance\": 27,\n      \"address\": \"Baguette & Baguette, Bab El Bhar, Tunis, Tunisie\"\n    },\n    {\n      \"id\": \"tmaps_poi_KeJy61JxR9\",\n      \"name\": \"كو زت\",\n      \"category\": \"restaurant\",\n      \"lat\": 36.8000958998238,\n      \"lng\": 10.181775599999998,\n      \"distance\": 27,\n      \"address\": \"كو زت, Bab El Bhar, Tunis, Tunisie\"\n    },\n    {\n      \"id\": \"tmaps_poi_0Vhv5XO1sp\",\n      \"name\": \"Le Vieux Port\",\n      \"category\": \"restaurant\",\n      \"lat\": 36.80069369982386,\n      \"lng\": 10.1817314,\n      \"distance\": 59,\n      \"address\": \"Le Vieux Port, Bab El Bhar, Tunis, Tunisie\"\n    }\n  ],\n  \"meta\": {\n    \"processing_time_ms\": 66,\n    \"provider\": \"TMaps Geocoding API v1\",\n    \"attribution\": \"© TMaps.tn | Data © OpenStreetMap contributors\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

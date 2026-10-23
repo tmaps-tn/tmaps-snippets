@@ -20,6 +20,10 @@ Ready-to-run, client-side code examples for the [TMaps](https://www.tmaps.tn) AP
 
 Coming soon: static map, directions, isochrone, optimized route and distance matrix examples ([pending/](pending/)).
 
+## Postman collection
+
+Try the API without writing code: import the [Postman collection](postman/) (tiles, forward and reverse geocoding, nearby search), set your key and send. Each request comes with documented parameters, example responses and tests.
+
 ## Repository layout
 
 ```
@@ -27,6 +31,7 @@ demos/            Client-side examples (plain HTML, no build), published on GitH
 servers/go/       Go server (standard library only)
 servers/node/     Node.js server (no dependencies)
 servers/python/   Python server (standard library only)
+postman/          Postman collection and environment
 pending/          Examples waiting for their API endpoint in production
 docker-compose.yml
 ```
