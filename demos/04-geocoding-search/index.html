@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Address search with forward geocoding – TMaps API example</title>
+  <title>Address search with forward geocoding | TMaps API example</title>
   <meta name="description" content="Search any address in Tunisia and get GPS coordinates, a confidence score and the commune, delegation and governorate with the TMaps Forward Geocoding API. Live JavaScript example with Leaflet.">
   <link rel="canonical" href="https://examples.tmaps.tn/04-geocoding-search/">
-  <meta property="og:title" content="Address search with forward geocoding – TMaps API example">
+  <meta property="og:title" content="Address search with forward geocoding | TMaps API example">
   <meta property="og:description" content="Turn a free-text address in Tunisia into GPS coordinates with the TMaps Forward Geocoding API.">
   <meta property="og:url" content="https://examples.tmaps.tn/04-geocoding-search/">
   <meta property="og:type" content="article">
@@ -153,7 +153,7 @@
 
       const res = await fetch(url, { signal });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(`${res.status} – ${data.error ?? res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status}: ${data.error ?? res.statusText}`);
       return data.results;
     }
 

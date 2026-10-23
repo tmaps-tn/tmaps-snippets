@@ -228,7 +228,7 @@
           ],
           "response": [
             {
-              "name": "200 – Avenue Habib Bourguiba, Tunis",
+              "name": "200, Avenue Habib Bourguiba, Tunis",
               "originalRequest": {
                 "method": "GET",
                 "header": [],
@@ -296,7 +296,7 @@
               "body": "{\n  \"status\": \"OK\",\n  \"query\": \"Avenue Habib Bourguiba, Tunis\",\n  \"results\": [\n    {\n      \"place_id\": \"tmaps_road_9Jx6veprY3\",\n      \"formatted\": \"Avenue Habib Bourguiba, Lac de Tunis, Bab El Bhar, Tunis, Tunisie\",\n      \"name\": \"Avenue Habib Bourguiba\",\n      \"type\": \"street\",\n      \"geometry\": {\n        \"location\": {\n          \"lat\": 36.80060045491796,\n          \"lng\": 10.191012134812192\n        },\n        \"location_type\": \"GEOMETRIC_CENTER\"\n      },\n      \"confidence\": 0.8,\n      \"types\": [\n        \"route\",\n        \"street_address\"\n      ],\n      \"components\": {\n        \"street\": \"Avenue Habib Bourguiba\",\n        \"postcode\": \"Tunis\",\n        \"commune\": \"Lac de Tunis\",\n        \"delegation\": \"Bab El Bhar\",\n        \"governorate\": \"Tunis\",\n        \"country\": \"TN\"\n      },\n      \"bbox\": [\n        10.1891136,\n        36.80034889982383,\n        10.1928909,\n        36.800927199823896\n      ],\n      \"plus_code\": {\n        \"global_code\": \"8F8GR52R+78\",\n        \"compound_code\": \"R52R+78 Bab El Bhar, Tunis\"\n      }\n    },\n    {\n      \"place_id\": \"tmaps_road_x414a04JVd\",\n      \"formatted\": \"Avenue Habib Bourguiba, Habib Thameur, Bab El Bhar, Tunis, Tunisie\",\n      \"name\": \"Avenue Habib Bourguiba\",\n      \"type\": \"street\",\n      \"geometry\": {\n        \"location\": {\n          \"lat\": 36.800868411143476,\n          \"lng\": 10.191346882293725\n        },\n        \"location_type\": \"GEOMETRIC_CENTER\"\n      },\n      \"confidence\": 0.8,\n      \"types\": [\n        \"route\",\n        \"street_address\"\n      ],\n      \"components\": {\n        \"street\": \"Avenue Habib Bourguiba\",\n        \"postcode\": \"Tunis\",\n        \"commune\": \"Habib Thameur\",\n        \"delegation\": \"Bab El Bhar\",\n        \"governorate\": \"Tunis\",\n        \"country\": \"TN\"\n      },\n      \"bbox\": [\n        10.1890732,\n        36.800650399823866,\n        10.1936133,\n        36.801146499823915\n      ],\n      \"plus_code\": {\n        \"global_code\": \"8F8GR52R+8J\",\n        \"compound_code\": \"R52R+8J Bab El Bhar, Tunis\"\n      }\n    }\n  ],\n  \"count\": 2,\n  \"meta\": {\n    \"processing_time_ms\": 118,\n    \"provider\": \"TMaps Geocoding API v1\",\n    \"attribution\": \"© TMaps.tn | Data © OpenStreetMap contributors\"\n  }\n}"
             },
             {
-              "name": "400 – Missing q",
+              "name": "400, Missing q",
               "originalRequest": {
                 "method": "GET",
                 "header": [],
@@ -387,7 +387,7 @@
           ],
           "response": [
             {
-              "name": "200 – Tunis center",
+              "name": "200, Tunis center",
               "originalRequest": {
                 "method": "GET",
                 "header": [],
@@ -514,7 +514,7 @@
           ],
           "response": [
             {
-              "name": "200 – Restaurants within 500 m",
+              "name": "200, Restaurants within 500 m",
               "originalRequest": {
                 "method": "GET",
                 "header": [],

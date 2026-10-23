@@ -1,4 +1,4 @@
-# TMaps API Examples – Maps, Geocoding & Routing for Tunisia
+# TMaps API Examples | Maps, Geocoding & Routing for Tunisia
 
 Ready-to-run, client-side code examples for the [TMaps](https://www.tmaps.tn) APIs: map tiles, geocoding, routing, isochrones, distance matrix and static maps. Each example is one HTML page with no build step, using Leaflet, OpenLayers or MapLibre GL, and shows the exact API request it sends.
 

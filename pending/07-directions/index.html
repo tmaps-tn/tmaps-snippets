@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Driving, walking and cycling directions – TMaps API example</title>
+  <title>Driving, walking and cycling directions | TMaps API example</title>
   <meta name="description" content="Calculate a route between two points in Tunisia with distance, travel time and turn-by-turn instructions using the TMaps Directions API. Live JavaScript example with Leaflet.">
   <link rel="canonical" href="https://examples.tmaps.tn/07-directions/">
-  <meta property="og:title" content="Driving, walking and cycling directions – TMaps API example">
+  <meta property="og:title" content="Driving, walking and cycling directions | TMaps API example">
   <meta property="og:description" content="Route, travel time and turn-by-turn instructions in Tunisia with the TMaps Directions API.">
   <meta property="og:url" content="https://examples.tmaps.tn/07-directions/">
   <meta property="og:type" content="article">
@@ -129,7 +129,7 @@
         const res = await fetch(url);
         const data = await res.json().catch(() => ({}));
         if (res.status === 404) throw new Error('No route found between these points.');
-        if (!res.ok) throw new Error(`${res.status} – ${data.error ?? res.statusText}`);
+        if (!res.ok) throw new Error(`${res.status}: ${data.error ?? res.statusText}`);
         render(data);
       } catch (error) {
         route.clearLayers();

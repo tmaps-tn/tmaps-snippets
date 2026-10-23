@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Find nearby restaurants and schools – TMaps API example</title>
+  <title>Find nearby restaurants and schools | TMaps API example</title>
   <meta name="description" content="Find restaurants and schools around a location in Tunisia, sorted by distance, with the TMaps Nearby Search API. Live JavaScript example with Leaflet.">
   <link rel="canonical" href="https://examples.tmaps.tn/08-nearby-search/">
-  <meta property="og:title" content="Find nearby places in Tunisia – TMaps API example">
+  <meta property="og:title" content="Find nearby places in Tunisia | TMaps API example">
   <meta property="og:description" content="Points of interest around a location, sorted by distance, with the TMaps Nearby Search API.">
   <meta property="og:url" content="https://examples.tmaps.tn/08-nearby-search/">
   <meta property="og:type" content="article">
@@ -127,7 +127,7 @@
       try {
         const res = await fetch(url);
         const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(`${res.status} – ${data.error ?? res.statusText}`);
+        if (!res.ok) throw new Error(`${res.status}: ${data.error ?? res.statusText}`);
         render(data.results);
       } catch (error) {
         places.clearLayers();

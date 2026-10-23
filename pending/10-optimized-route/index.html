@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Optimize a delivery route (traveling salesman) – TMaps API example</title>
+  <title>Optimize a delivery route (traveling salesman) | TMaps API example</title>
   <meta name="description" content="Find the best order to visit up to 50 delivery stops in Tunisia and minimize driving time or distance with the TMaps Optimized Routing API. Live JavaScript example with Leaflet.">
   <link rel="canonical" href="https://examples.tmaps.tn/10-optimized-route/">
-  <meta property="og:title" content="Optimize a delivery route – TMaps API example">
+  <meta property="og:title" content="Optimize a delivery route | TMaps API example">
   <meta property="og:description" content="Best visiting order for delivery stops in Tunisia with the TMaps Optimized Routing API.">
   <meta property="og:url" content="https://examples.tmaps.tn/10-optimized-route/">
   <meta property="og:type" content="article">
@@ -160,7 +160,7 @@
         });
         const data = await res.json().catch(() => ({}));
         if (res.status === 404) throw new Error('No route could be calculated: a stop may be outside the coverage area.');
-        if (!res.ok) throw new Error(`${res.status} – ${data.error ?? res.statusText}`);
+        if (!res.ok) throw new Error(`${res.status}: ${data.error ?? res.statusText}`);
         render(data);
       } catch (error) {
         demo.showError(error);

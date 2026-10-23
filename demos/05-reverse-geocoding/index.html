@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Get an address from a map click (reverse geocoding) – TMaps API example</title>
+  <title>Get an address from a map click (reverse geocoding) | TMaps API example</title>
   <meta name="description" content="Click anywhere on a map of Tunisia to get the postal address, commune, delegation and governorate with the TMaps Reverse Geocoding API. Live JavaScript example with Leaflet.">
   <link rel="canonical" href="https://examples.tmaps.tn/05-reverse-geocoding/">
-  <meta property="og:title" content="Get an address from a map click – TMaps API example">
+  <meta property="og:title" content="Get an address from a map click | TMaps API example">
   <meta property="og:description" content="Turn GPS coordinates in Tunisia into a postal address with the TMaps Reverse Geocoding API.">
   <meta property="og:url" content="https://examples.tmaps.tn/05-reverse-geocoding/">
   <meta property="og:type" content="article">
@@ -117,7 +117,7 @@
         const res = await fetch(url);
         const data = await res.json().catch(() => ({}));
         if (res.status === 404) throw new Error('No address found near this point.');
-        if (!res.ok) throw new Error(`${res.status} – ${data.error ?? res.statusText}`);
+        if (!res.ok) throw new Error(`${res.status}: ${data.error ?? res.statusText}`);
         render(data.results[0]);
       } catch (error) {
         document.getElementById('output').innerHTML = '';

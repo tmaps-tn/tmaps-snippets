@@ -12,13 +12,13 @@ Key facts:
 
 ## Display a map
 
-- [01 Map with Leaflet](https://examples.tmaps.tn/01-raster-leaflet/): raster XYZ tiles `https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=…`, zoom 0–18.
+- [01 Map with Leaflet](https://examples.tmaps.tn/01-raster-leaflet/): raster XYZ tiles `https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=…`, zoom 0 to 18.
 - [02 Map with OpenLayers](https://examples.tmaps.tn/02-raster-openlayers/): same tiles with `ol.source.XYZ` and a shareable view in the URL.
 - [03 Vector map styles with MapLibre GL](https://examples.tmaps.tn/03-vector-maplibre-styles/): styles `streets`, `dark`, `terrain`, `sunny` at `https://tiles.tmaps.tn/v-tile/{style}.json?api_key=…`.
 
 ## Find addresses and places
 
-- [04 Address search (forward geocoding)](https://examples.tmaps.tn/04-geocoding-search/): `GET /geocoding/forward?q=…&country=TN&limit=5&proximity=lat,lng`. Returns `confidence` (0–1); save coordinates when ≥ 0.85.
+- [04 Address search (forward geocoding)](https://examples.tmaps.tn/04-geocoding-search/): `GET /geocoding/forward?q=…&country=TN&limit=5&proximity=lat,lng`. Returns `confidence` (0 to 1); save coordinates when ≥ 0.85.
 - [05 Address from a map click (reverse geocoding)](https://examples.tmaps.tn/05-reverse-geocoding/): `GET /geocoding/reverse?lat=…&lng=…`. Returns the nearest address and its `distance` in meters.
 - [08 Nearby places](https://examples.tmaps.tn/08-nearby-search/): `GET /geocoding/nearby?lat=…&lng=…&radius=…&categories=restaurant`. Radius up to 10,000 m, results sorted by distance.
 

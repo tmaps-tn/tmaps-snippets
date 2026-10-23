@@ -1,4 +1,4 @@
-# TMaps API – Postman collection
+# TMaps API Postman collection
 
 Ready-to-run Postman collection for the [TMaps](https://www.tmaps.tn) APIs: map tiles, forward geocoding, reverse geocoding and nearby search for Tunisia.
 

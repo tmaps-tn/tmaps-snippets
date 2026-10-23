@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Find the nearest driver with a distance matrix – TMaps API example</title>
+  <title>Find the nearest driver with a distance matrix | TMaps API example</title>
   <meta name="description" content="Compare real travel times from several drivers to a customer in Tunisia and dispatch the nearest one with the TMaps Distance Matrix API. Live JavaScript example with Leaflet.">
   <link rel="canonical" href="https://examples.tmaps.tn/11-distance-matrix/">
-  <meta property="og:title" content="Find the nearest driver – TMaps API example">
+  <meta property="og:title" content="Find the nearest driver | TMaps API example">
   <meta property="og:description" content="Travel times from several drivers to a customer with the TMaps Distance Matrix API.">
   <meta property="og:url" content="https://examples.tmaps.tn/11-distance-matrix/">
   <meta property="og:type" content="article">
@@ -128,7 +128,7 @@
         });
         const data = await res.json().catch(() => ({}));
         if (res.status === 404) throw new Error('A point is outside the coverage area.');
-        if (!res.ok) throw new Error(`${res.status} – ${data.error ?? res.statusText}`);
+        if (!res.ok) throw new Error(`${res.status}: ${data.error ?? res.statusText}`);
         render(data);
       } catch (error) {
         link.setLatLngs([]);
@@ -154,7 +154,7 @@
           ${ranking.map((driver) => `
             <tr class="${driver === best ? 'best' : ''}">
               <td>${driver.name}</td><td>${demo.formatDuration(driver.duration)}</td>
-              <td>${driver.distance != null ? demo.formatDistance(driver.distance) : '–'}</td>
+              <td>${driver.distance != null ? demo.formatDistance(driver.distance) : 'n/a'}</td>
             </tr>`).join('')}
         </table>`;
     }

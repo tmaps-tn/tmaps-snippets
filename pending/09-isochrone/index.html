@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Delivery zone with isochrones (5, 10, 15 min) – TMaps API example</title>
+  <title>Delivery zone with isochrones (5, 10, 15 min) | TMaps API example</title>
   <meta name="description" content="Draw the area reachable in 5, 10 and 15 minutes from a restaurant, store or warehouse in Tunisia with the TMaps Isochrone API. GeoJSON polygons displayed with Leaflet.">
   <link rel="canonical" href="https://examples.tmaps.tn/09-isochrone/">
-  <meta property="og:title" content="Delivery zone with isochrones – TMaps API example">
+  <meta property="og:title" content="Delivery zone with isochrones | TMaps API example">
   <meta property="og:description" content="Area reachable in 5, 10 and 15 minutes from a point in Tunisia with the TMaps Isochrone API.">
   <meta property="og:url" content="https://examples.tmaps.tn/09-isochrone/">
   <meta property="og:type" content="article">
@@ -134,7 +134,7 @@
         });
         const data = await res.json().catch(() => ({}));
         if (res.status === 404) throw new Error('This point is outside the coverage area.');
-        if (!res.ok) throw new Error(`${res.status} – ${data.error ?? res.statusText}`);
+        if (!res.ok) throw new Error(`${res.status}: ${data.error ?? res.statusText}`);
         render(data, metric);
       } catch (error) {
         zones.clearLayers();

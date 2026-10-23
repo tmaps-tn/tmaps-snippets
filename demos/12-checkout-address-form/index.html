@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Checkout address form with autocomplete and map pin – TMaps API example</title>
+  <title>Checkout address form with autocomplete and map pin | TMaps API example</title>
   <meta name="description" content="E-commerce delivery address form for Tunisia: address autocomplete, auto-filled commune, delegation and governorate, and a draggable map pin to confirm the exact location. Built with the TMaps Geocoding APIs.">
   <link rel="canonical" href="https://examples.tmaps.tn/12-checkout-address-form/">
-  <meta property="og:title" content="Checkout address form with autocomplete – TMaps API example">
+  <meta property="og:title" content="Checkout address form with autocomplete | TMaps API example">
   <meta property="og:description" content="Delivery address form for Tunisia with autocomplete and a map pin, built with the TMaps Geocoding APIs.">
   <meta property="og:url" content="https://examples.tmaps.tn/12-checkout-address-form/">
   <meta property="og:type" content="article">
@@ -136,7 +136,7 @@
       demo.clearError();
       const res = await fetch(url, { signal: controller.signal });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(`${res.status} – ${data.error ?? res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status}: ${data.error ?? res.statusText}`);
       return data;
     }
 
