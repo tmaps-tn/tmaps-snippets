@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Static map image for emails and PDFs | TMaps API example</title>
-  <meta name="description" content="Generate a PNG map image of Tunisia with markers for emails, PDF reports or listing thumbnails with the TMaps Static Maps API. Live example that builds the image URL.">
+  <title>Static map image for listings, routes and emails | TMaps API example</title>
+  <meta name="description" content="Turn a location or a route in Tunisia into a PNG map image for listings, emails or PDFs with the TMaps Static Maps API. Live example that builds the image URL.">
   <link rel="canonical" href="https://examples.tmaps.tn/06-static-map/">
-  <meta property="og:title" content="Static map image for emails and PDFs | TMaps API example">
-  <meta property="og:description" content="Generate a PNG map image with markers with the TMaps Static Maps API.">
+  <meta property="og:title" content="Static map image for listings, routes and emails | TMaps API example">
+  <meta property="og:description" content="Map images of a place or a route with markers, built from a plain URL with the TMaps Static Maps API.">
   <meta property="og:url" content="https://examples.tmaps.tn/06-static-map/">
   <meta property="og:type" content="article">
   <meta name="twitter:card" content="summary">
@@ -16,8 +16,8 @@
   {
     "@context": "https://schema.org",
     "@type": "TechArticle",
-    "headline": "Static map image for emails and PDFs",
-    "description": "Generate a PNG map image with markers for emails, PDF reports or listing thumbnails with the TMaps Static Maps API.",
+    "headline": "Static map image for listings, routes and emails",
+    "description": "Turn a location or a route in Tunisia into a PNG map image with markers for listings, emails or PDF reports with the TMaps Static Maps API.",
     "url": "https://examples.tmaps.tn/06-static-map/",
     "inLanguage": "en",
     "programmingLanguage": "JavaScript",
@@ -37,7 +37,9 @@
   <script src="../shared/config.js"></script>
   <script src="../shared/demo.js"></script>
   <style>
-    #preview { display: block; width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--border); }
+    input[type="range"] { padding: 0; border: 0; background: none; }
+    #preview { display: block; width: 100%; height: auto; margin-bottom: 12px; border-radius: 10px; border: 1px solid var(--border); }
+    #snippet { margin-bottom: 0; }
   </style>
 </head>
 <body>
@@ -45,49 +47,88 @@
     <aside class="panel">
       <nav class="crumbs"><a href="../">TMaps API examples</a> / 06</nav>
       <h1>Static map image</h1>
-      <p class="lead">Generate a PNG image of a map with markers, ready for emails, PDF reports or listing thumbnails. Pan the interactive map to choose the area, click to move the marker, then generate the image with the TMaps Static Maps API.</p>
+      <p class="lead">Turn a place or a route into a map image for a property listing, an order confirmation email or a PDF report. The TMaps Static Maps API returns a PNG from a plain URL: the page that shows it needs no map library.</p>
 
-      <form class="controls" id="form">
+      <div class="controls">
+        <label class="field">Use case
+          <select id="mode">
+            <option value="listing">Listing thumbnail (one place)</option>
+            <option value="route">Route thumbnail (A to B)</option>
+          </select>
+        </label>
+
+        <div id="listing-controls">
+          <div class="row">
+            <label class="field">Place
+              <select id="place">
+                <option value="sidi-bou-said">Sidi Bou Saïd</option>
+                <option value="medina">Médina de Tunis</option>
+                <option value="sousse">Sousse port</option>
+                <option value="custom">Point clicked on the map</option>
+              </select>
+            </label>
+            <label class="field"><span>Zoom <output id="zoom-value">16</output></span>
+              <input type="range" id="zoom" min="1" max="20" step="1" value="16">
+            </label>
+          </div>
+          <p class="hint">Pick a place, or click the map to move the pin.</p>
+        </div>
+
+        <p class="hint" id="route-controls" hidden>Drag the A and B markers, or click the map to move B. The image is framed on the route automatically.</p>
+
         <div class="row">
           <label class="field">Style
-            <select id="style"><option>streets</option><option>dark</option><option>terrain</option><option>sunny</option></select>
+            <select id="style"><option>streets</option><option>dark</option><option>terrain</option><option>sunny</option><option>classic</option></select>
           </label>
+          <label class="field">Labels
+            <select id="lang"><option value="fr">French</option><option value="ar">Arabic</option></select>
+          </label>
+        </div>
+        <div class="row">
           <label class="field">Size
             <select id="size"><option>600x400</option><option selected>800x500</option><option>1280x720</option></select>
           </label>
+          <label class="field">Scale
+            <select id="scale"><option value="1">1x</option><option value="2">2x (retina)</option></select>
+          </label>
+        </div>
+      </div>
+
+      <div class="output" id="output" hidden>
+        <img id="preview" alt="">
+        <div class="stats">
+          <div class="stat"><b id="stat-size"></b><span>Image size</span></div>
+          <div class="stat"><b id="stat-weight"></b><span>Weight</span></div>
         </div>
         <div class="row">
-          <label class="field">Marker color
-            <select id="color"><option>red</option><option>blue</option><option>green</option><option>orange</option><option>purple</option></select>
-          </label>
-          <label class="field">Label
-            <input id="label" value="A" maxlength="1">
-          </label>
+          <button type="button" id="copy-url">Copy URL</button>
+          <button type="button" class="secondary" id="copy-html">Copy &lt;img&gt; tag</button>
         </div>
-        <button type="submit">Generate image</button>
-      </form>
-
-      <div class="output" id="output"></div>
+        <pre id="snippet"></pre>
+        <p class="hint">Replace <code>YOUR_API_KEY</code> with your key. <code>srcset</code> serves the 2x image to high-density screens.</p>
+      </div>
       <div class="error" id="error" role="alert"></div>
 
       <details class="request" open>
         <summary>API request</summary>
-        <pre id="request">GET https://api.tmaps.tn/maps/static?center=36.8528,10.3261&amp;zoom=15&amp;size=800x500&amp;style=streets&amp;marker=36.8528,10.3261|red|A&amp;api_key=YOUR_API_KEY</pre>
+        <pre id="request">GET https://api.tmaps.tn/maps/static?center=36.8708,10.3417&amp;zoom=16&amp;size=800x500&amp;style=streets&amp;lang=fr&amp;marker=36.8708,10.3417|red&amp;api_key=YOUR_API_KEY</pre>
       </details>
 
       <section class="about">
         <h2>How it works</h2>
         <ol>
-          <li>The image is a plain URL: <code>GET /maps/static</code> with <code>center</code>, <code>zoom</code> and <code>size</code>.</li>
-          <li>Each <code>marker</code> parameter adds a pin, written <code>lat,lng|color|label</code>. Repeat the parameter for several markers (up to 20).</li>
-          <li>Put the URL in an <code>&lt;img&gt;</code> tag, an email template or a PDF generator.</li>
+          <li>Listing thumbnail: <code>GET /maps/static</code> with <code>center</code>, <code>zoom</code> (1 to 20) and <code>size</code>, plus a <code>marker</code> written <code>lat,lng|color|label</code>.</li>
+          <li>Route thumbnail: the page first calls <code>GET /routing/direction</code>. Its <code>geometry</code> is an encoded polyline (precision 5) that goes straight into <code>path=weight:5|color:0x2e47f0|enc:…</code>.</li>
+          <li>Without <code>center</code> and <code>zoom</code>, the image is framed on the markers and paths, with a <code>padding</code> of 40 px by default.</li>
+          <li>The page fetches the image first so an error is shown as text, then displays it. On your site, put the URL in an <code>&lt;img&gt;</code> tag, an email template or a PDF generator.</li>
         </ol>
         <h2>Good to know</h2>
         <ul>
-          <li>Maximum size is 1280 × 1280 pixels. Only PNG is supported for now.</li>
-          <li>Use <code>bbox</code> instead of <code>center</code> + <code>zoom</code> to fit an area automatically.</li>
-          <li>Draw a route with <code>path=weight:5|color:0x0066ff|enc:…</code> using the encoded polyline returned by the Directions API.</li>
-          <li>The URL fully describes the image, so cache it on your CDN to avoid generating it twice.</li>
+          <li>Up to 1280 × 1280 pixels. <code>scale=2</code> doubles the pixels for retina screens.</li>
+          <li><code>format</code> is <code>png</code> (default), <code>webp</code> or <code>jpg</code>. <code>lang=ar</code> shows the labels in Arabic.</li>
+          <li><code>enc:</code> is always the last part of a <code>path</code> and the polyline must be URL-encoded. Repeat <code>marker</code> (up to 50), <code>path</code> or <code>polygon=fillcolor:0x2e47f033|lat,lng|…</code> (up to 20 each).</li>
+          <li><code>bbox=minLng,minLat,maxLng,maxLat</code> shows a whole area. For long routes, send a <code>POST</code> with a JSON body (<code>markers</code>, <code>paths</code> with <code>polyline</code>, <code>coordinates</code> or <code>geojson</code>) to keep the URL short.</li>
+          <li>Errors are JSON, e.g. <code>{"error": {"code": "INVALID_REQUEST", "message": "…"}}</code> with status 400. The URL fully describes the image, so cache it on your CDN.</li>
         </ul>
         <p class="links">
           <a href="https://www.tmaps.tn/documentation/api/static-maps">Static Maps docs</a> ·
@@ -100,43 +141,193 @@
 
   <script>
     const API_KEY = window.TMAPS_API_KEY || 'YOUR_API_KEY';
+    const PLACES = {
+      'sidi-bou-said': { name: 'Sidi Bou Saïd', lat: 36.8708, lng: 10.3417 },
+      medina: { name: 'Médina de Tunis', lat: 36.7987, lng: 10.1713 },
+      sousse: { name: 'Sousse port', lat: 35.8256, lng: 10.6411 },
+    };
 
-    const map = L.map('map').setView([36.8528, 10.3261], 15); // Carthage
+    const map = L.map('map').setView([36.8708, 10.3417], 16);
     L.tileLayer(`https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=${API_KEY}`, {
       maxZoom: 18,
       attribution: '© <a href="https://www.tmaps.tn">TMaps</a>',
     }).addTo(map);
 
-    const marker = L.marker(map.getCenter(), { icon: demo.pin('A', '#d92d20') }).addTo(map);
-    map.on('click', (event) => marker.setLatLng(event.latlng));
+    // Vignette d'annonce : un point. Vignette d'itinéraire : Médina de Tunis → Carthage.
+    const pin = L.marker([36.8708, 10.3417], { icon: demo.pin('', '#d92d20'), draggable: true });
+    const start = L.marker([36.7987, 10.1713], { icon: demo.pin('A', '#2e47f0'), draggable: true });
+    const end = L.marker([36.8528, 10.3261], { icon: demo.pin('B', '#d92d20'), draggable: true });
+    const listingLayer = L.layerGroup([pin]).addTo(map);
+    const routeLayer = L.layerGroup([start, end]);
 
-    document.getElementById('form').addEventListener('submit', (event) => {
-      event.preventDefault();
+    const value = (id) => document.getElementById(id).value;
+    const point = (latlng) => `${+latlng.lat.toFixed(5)},${+latlng.lng.toFixed(5)}`;
+    const withoutKey = (url) => url.replace(/api_key=[^&]+/, 'api_key=YOUR_API_KEY');
+    let lastRun = 0;
+    let objectUrl;
+    let current = {};
+
+    document.getElementById('mode').addEventListener('change', () => {
+      const route = value('mode') === 'route';
+      document.getElementById('listing-controls').hidden = route;
+      document.getElementById('route-controls').hidden = !route;
+      if (route) {
+        map.removeLayer(listingLayer).addLayer(routeLayer);
+        map.fitBounds(L.latLngBounds([start.getLatLng(), end.getLatLng()]), { padding: [60, 60] });
+      } else {
+        map.removeLayer(routeLayer).addLayer(listingLayer);
+        map.setView(pin.getLatLng(), Math.min(+value('zoom'), 18));
+      }
       generate();
     });
+    document.getElementById('place').addEventListener('change', () => {
+      const place = PLACES[value('place')];
+      if (!place) return;
+      pin.setLatLng(place);
+      map.setView(place, Math.min(+value('zoom'), 18));
+      generate();
+    });
+    document.getElementById('zoom').addEventListener('input', () => {
+      document.getElementById('zoom-value').textContent = value('zoom');
+    });
+    document.getElementById('zoom').addEventListener('change', () => {
+      // Les cartes statiques suivent les zooms des tuiles 256 px de Leaflet (au-delà de 18, la carte reste à 18)
+      map.setView(pin.getLatLng(), Math.min(+value('zoom'), 18));
+      generate();
+    });
+    ['style', 'lang', 'size', 'scale'].forEach((id) => document.getElementById(id).addEventListener('change', generate));
+    pin.on('dragend', () => { document.getElementById('place').value = 'custom'; generate(); });
+    start.on('dragend', generate);
+    end.on('dragend', generate);
+    map.on('click', (event) => {
+      if (value('mode') === 'route') {
+        end.setLatLng(event.latlng);
+      } else {
+        pin.setLatLng(event.latlng);
+        document.getElementById('place').value = 'custom';
+      }
+      generate();
+    });
+    document.getElementById('copy-url').addEventListener('click', (event) => copy(event.target, current.url));
+    document.getElementById('copy-html').addEventListener('click', (event) => copy(event.target, current.snippet));
 
-    function generate() {
-      const center = map.getCenter();
-      const pin = marker.getLatLng();
-      const label = document.getElementById('label').value.trim().toUpperCase();
+    // Paramètres communs aux deux cas
+    function common() {
+      return [['size', value('size')], ['style', value('style')], ['lang', value('lang')]];
+    }
 
-      const url = new URL('https://api.tmaps.tn/maps/static');
-      url.searchParams.set('center', `${center.lat.toFixed(5)},${center.lng.toFixed(5)}`);
-      url.searchParams.set('zoom', map.getZoom());
-      url.searchParams.set('size', document.getElementById('size').value);
-      url.searchParams.set('style', document.getElementById('style').value);
-      url.searchParams.append('marker', `${pin.lat.toFixed(5)},${pin.lng.toFixed(5)}|${document.getElementById('color').value}|${label}`);
-      url.searchParams.set('api_key', API_KEY);
+    function listing() {
+      const place = PLACES[value('place')];
+      return {
+        params: [['center', point(pin.getLatLng())], ['zoom', value('zoom')], ...common(), ['marker', `${point(pin.getLatLng())}|red`]],
+        alt: `Map of ${place ? place.name : 'the listing location'}`,
+      };
+    }
 
+    async function route() {
+      const url = new URL('https://api.tmaps.tn/routing/direction');
+      url.search = new URLSearchParams({
+        from: point(start.getLatLng()),
+        to: point(end.getLatLng()),
+        profile: 'driving',
+        geometry: 'polyline',
+        api_key: API_KEY,
+      });
       demo.showRequest('GET', url);
+
+      const res = await fetch(url);
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 404) throw new Error('No route found between these points.');
+      if (!res.ok) throw new Error(`${res.status}: ${data.error?.message ?? data.error ?? res.statusText}`);
+
+      // Ni center ni zoom : l'image est cadrée sur les marqueurs et le tracé
+      return {
+        directions: String(url),
+        params: [
+          ...common(),
+          ['marker', `${point(start.getLatLng())}|0x2e47f0|A`],
+          ['marker', `${point(end.getLatLng())}|0xd92d20|B`],
+          ['path', `weight:5|color:0x2e47f0|enc:${data.geometry}`],
+        ],
+        alt: `Route map, ${demo.formatDistance(data.distance)}, ${demo.formatDuration(data.duration)} by car`,
+      };
+    }
+
+    // , | et : restent lisibles. La polyline après enc: est encodée en entier :
+    // elle peut contenir \ ` { } | ^ qui ne passent pas tels quels dans une URL.
+    function encode(text) {
+      const readable = (v) => encodeURIComponent(v).replace(/%2C/g, ',').replace(/%7C/g, '|').replace(/%3A/g, ':');
+      const i = text.indexOf('enc:');
+      return i < 0 ? readable(text) : readable(text.slice(0, i + 4)) + encodeURIComponent(text.slice(i + 4));
+    }
+
+    function staticUrl(params, scale) {
+      const query = params.map(([key, val]) => `${key}=${encode(String(val))}`);
+      if (scale > 1) query.push(`scale=${scale}`);
+      query.push(`api_key=${encodeURIComponent(API_KEY)}`);
+      return `https://api.tmaps.tn/maps/static?${query.join('&')}`;
+    }
+
+    async function generate() {
+      const run = ++lastRun;
       demo.clearError();
 
-      const img = new Image();
-      img.id = 'preview';
-      img.alt = 'Static map generated by the TMaps Static Maps API';
-      img.onload = () => document.getElementById('output').replaceChildren(img);
-      img.onerror = () => demo.showError(new Error('The image could not be loaded. Check your API key and its authorized domains.'));
-      img.src = url;
+      try {
+        const isRoute = value('mode') === 'route';
+        const { params, alt, directions } = isRoute ? await route() : listing();
+        if (run !== lastRun) return;
+        const scale = +value('scale');
+        const url = staticUrl(params, scale);
+        document.getElementById('request').textContent = [directions, url].filter(Boolean).map((u) => `GET ${withoutKey(u)}`).join('\n\n');
+
+        // Une erreur revient en JSON, pas en image : on lit la réponse avant de l'afficher
+        const res = await fetch(url);
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(`${res.status}: ${data.error?.message ?? data.error ?? res.statusText}`);
+        }
+        const blob = await res.blob();
+        if (run !== lastRun) return;
+        render(blob, params, scale, alt);
+      } catch (error) {
+        if (run !== lastRun) return;
+        document.getElementById('output').hidden = true;
+        demo.showError(error);
+      }
+    }
+
+    function render(blob, params, scale, alt) {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      objectUrl = URL.createObjectURL(blob);
+      const [width, height] = value('size').split('x');
+      const url1x = withoutKey(staticUrl(params, 1));
+      const url2x = withoutKey(staticUrl(params, 2));
+
+      const img = document.getElementById('preview');
+      img.src = objectUrl;
+      img.alt = alt;
+      img.width = width;
+      img.height = height;
+
+      current = {
+        url: scale > 1 ? url2x : url1x,
+        snippet: `<img src="${demo.escape(url1x)}"\n     srcset="${demo.escape(url1x)} 1x, ${demo.escape(url2x)} 2x"\n     width="${width}" height="${height}" alt="${demo.escape(alt)}" loading="lazy">`,
+      };
+      document.getElementById('snippet').textContent = current.snippet;
+      document.getElementById('stat-size').textContent = `${width * scale} × ${height * scale} px`;
+      document.getElementById('stat-weight').textContent = `${Math.max(1, Math.round(blob.size / 1024))} KB`;
+      document.getElementById('output').hidden = false;
+    }
+
+    async function copy(button, text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        const label = button.textContent;
+        button.textContent = 'Copied';
+        setTimeout(() => { button.textContent = label; }, 1500);
+      } catch {
+        demo.showError(new Error('Copy failed: select the text and copy it manually.'));
+      }
     }
 
     generate();

@@ -1215,6 +1215,535 @@
 					]
 				}
 			]
+		},
+		{
+			"name": "Static maps",
+			"description": "Map images (PNG, WebP or JPEG) of a place, a route or an area, with markers, paths and polygons, built from a plain URL or a JSON body. Put the URL in an `<img>` tag, an email template or a PDF.\n\nShared parameters: `size` (required, WxH up to 1280 × 1280), `scale` (1 or 2), `style` (streets, dark, terrain, sunny, classic), `lang` (fr, ar), `format` (png, webp, jpg). Framing: `center` + `zoom` (1 to 20), `bbox`, or nothing to fit the overlays with `padding` (40 px by default). Errors: `{\"error\": {\"code\", \"message\"}}` with INVALID_REQUEST, NOT_FOUND, LIMIT_EXCEEDED, ENGINE_TIMEOUT, ENGINE_ERROR.\n\n**Not live yet:** `/maps/static` is implemented but not deployed in production. These requests fail (404) until it is.",
+			"item": [
+				{
+					"name": "Listing thumbnail (GET)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/maps/static?center=36.8708,10.3417&zoom=16&size=800x500&style=streets&lang=fr&marker=36.8708,10.3417|red",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"maps",
+								"static"
+							],
+							"query": [
+								{
+									"key": "center",
+									"value": "36.8708,10.3417",
+									"description": "lat,lng of the image centre (Sidi Bou Saïd). Goes with zoom."
+								},
+								{
+									"key": "zoom",
+									"value": "16",
+									"description": "1 to 20, decimals accepted. Same zoom levels as 256 px tiles (Leaflet, OpenLayers)."
+								},
+								{
+									"key": "size",
+									"value": "800x500",
+									"description": "Required. WxH in pixels, 1 to 1280 per side."
+								},
+								{
+									"key": "style",
+									"value": "streets",
+									"description": "streets, dark, terrain, sunny or classic. Default: streets."
+								},
+								{
+									"key": "lang",
+									"value": "fr",
+									"description": "Label language: fr or ar. Default: fr."
+								},
+								{
+									"key": "scale",
+									"value": "2",
+									"description": "2 doubles the pixels for retina screens. Default: 1.",
+									"disabled": true
+								},
+								{
+									"key": "format",
+									"value": "webp",
+									"description": "png (default), webp or jpg.",
+									"disabled": true
+								},
+								{
+									"key": "marker",
+									"value": "36.8708,10.3417|red",
+									"description": "lat,lng|color|label. Color: a name (red, blue, green, orange, purple, black, white, gray, yellow) or 0xRRGGBB. Label: one character A-Z or 0-9. Repeatable, up to 50."
+								},
+								{
+									"key": "bbox",
+									"value": "10.3300,36.8650,10.3550,36.8770",
+									"description": "minLng,minLat,maxLng,maxLat: show this whole area instead of center + zoom.",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Map image of one place with a pin, for a property listing, a store page or an email.\n\nFrame it with `center` + `zoom`, with `bbox`, or give neither to fit the overlays. Put the URL in an `<img>` tag: `<img src=\"https://api.tmaps.tn/maps/static?center=36.8708,10.3417&zoom=16&size=800x500&marker=36.8708,10.3417|red&api_key=YOUR_API_KEY\">`.\n\n**Not live yet:** `/maps/static` is implemented but not deployed in production. These requests fail (404) until it is.\n\nDocs: https://www.tmaps.tn/documentation/api/static-maps · Live example: https://examples.tmaps.tn/06-static-map/"
+					},
+					"response": [
+						{
+							"name": "200, Sidi Bou Saïd, 800 × 500 PNG",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/maps/static?center=36.8708,10.3417&zoom=16&size=800x500&style=streets&lang=fr&marker=36.8708,10.3417|red",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"maps",
+										"static"
+									],
+									"query": [
+										{
+											"key": "center",
+											"value": "36.8708,10.3417",
+											"description": "lat,lng of the image centre (Sidi Bou Saïd). Goes with zoom."
+										},
+										{
+											"key": "zoom",
+											"value": "16",
+											"description": "1 to 20, decimals accepted. Same zoom levels as 256 px tiles (Leaflet, OpenLayers)."
+										},
+										{
+											"key": "size",
+											"value": "800x500",
+											"description": "Required. WxH in pixels, 1 to 1280 per side."
+										},
+										{
+											"key": "style",
+											"value": "streets",
+											"description": "streets, dark, terrain, sunny or classic. Default: streets."
+										},
+										{
+											"key": "lang",
+											"value": "fr",
+											"description": "Label language: fr or ar. Default: fr."
+										},
+										{
+											"key": "scale",
+											"value": "2",
+											"description": "2 doubles the pixels for retina screens. Default: 1.",
+											"disabled": true
+										},
+										{
+											"key": "format",
+											"value": "webp",
+											"description": "png (default), webp or jpg.",
+											"disabled": true
+										},
+										{
+											"key": "marker",
+											"value": "36.8708,10.3417|red",
+											"description": "lat,lng|color|label. Color: a name (red, blue, green, orange, purple, black, white, gray, yellow) or 0xRRGGBB. Label: one character A-Z or 0-9. Repeatable, up to 50."
+										},
+										{
+											"key": "bbox",
+											"value": "10.3300,36.8650,10.3550,36.8770",
+											"description": "minLng,minLat,maxLng,maxLat: show this whole area instead of center + zoom.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "image/png"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "public, max-age=86400"
+								},
+								{
+									"key": "X-Cache",
+									"value": "MISS"
+								}
+							],
+							"body": "Binary PNG image, 800 × 500 px (not stored here): Sidi Bou Saïd at zoom 16, streets style, French labels, red pin at the centre, « © TMaps © OpenStreetMap » attribution."
+						}
+					],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', () => pm.response.to.have.status(200));",
+									"if (pm.response.code === 401) console.warn('401: set api_key in the TMaps environment.');",
+									"if (pm.response.code !== 200) console.warn(`${pm.response.code}: ${pm.response.text()}`);",
+									"pm.test('Returns a PNG image', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('image/png'));",
+									"pm.test('Image is not empty', () => pm.expect(pm.response.responseSize).to.be.above(0));"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Route thumbnail (GET)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/maps/static?size=800x500&style=streets&lang=fr&marker=36.7987,10.1713|0x2e47f0|A&marker=36.8528,10.3261|0xd92d20|B&path=weight:5|color:0x2e47f0|enc:%7Bfr_Fsqa%7D%40kHw~%40g%7C%40cqD_%7CBowH_jAwyEobAkaE",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"maps",
+								"static"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "800x500",
+									"description": "Required. WxH in pixels, 1 to 1280 per side."
+								},
+								{
+									"key": "style",
+									"value": "streets",
+									"description": "streets, dark, terrain, sunny or classic. Default: streets."
+								},
+								{
+									"key": "lang",
+									"value": "fr",
+									"description": "Label language: fr or ar. Default: fr."
+								},
+								{
+									"key": "scale",
+									"value": "2",
+									"description": "2 doubles the pixels for retina screens. Default: 1.",
+									"disabled": true
+								},
+								{
+									"key": "format",
+									"value": "webp",
+									"description": "png (default), webp or jpg.",
+									"disabled": true
+								},
+								{
+									"key": "marker",
+									"value": "36.7987,10.1713|0x2e47f0|A",
+									"description": "Start (Médina de Tunis), blue pin labelled A."
+								},
+								{
+									"key": "marker",
+									"value": "36.8528,10.3261|0xd92d20|B",
+									"description": "End (Carthage), red pin labelled B."
+								},
+								{
+									"key": "path",
+									"value": "weight:5|color:0x2e47f0|enc:%7Bfr_Fsqa%7D%40kHw~%40g%7C%40cqD_%7CBowH_jAwyEobAkaE",
+									"description": "weight:5|color:0xRRGGBB[AA]|enc:<polyline>. Placeholder polyline (6 points, Médina → Carthage): replace it with the URL-encoded `geometry` of Directions (GET) with geometry=polyline. enc: is always the last part. Repeatable, up to 20."
+								},
+								{
+									"key": "padding",
+									"value": "40",
+									"description": "Margin in pixels around the overlays when the image is auto-framed (0 to 300). Default: 40.",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Route thumbnail: two markers and a path, auto-framed (no `center`, no `zoom`).\n\nThe `geometry` returned by `GET /routing/direction` (default `geometry=polyline`, precision 5) goes straight after `enc:`, URL-encoded: an encoded polyline can contain `|`, `\\`, `{` or `}`. The value here is a short placeholder polyline so the request runs as is.\n\nPaths also accept points: `path=color:red|36.80,10.17|36.85,10.33`. Polygons: `polygon=fillcolor:0x2e47f033|color:0x2e47f0|weight:2|lat,lng|lat,lng|lat,lng`.\n\n**Not live yet:** `/maps/static` is implemented but not deployed in production. These requests fail (404) until it is.\n\nDocs: https://www.tmaps.tn/documentation/api/static-maps · Live example: https://examples.tmaps.tn/06-static-map/"
+					},
+					"response": [
+						{
+							"name": "200, Médina → Carthage, auto-framed",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/maps/static?size=800x500&style=streets&lang=fr&marker=36.7987,10.1713|0x2e47f0|A&marker=36.8528,10.3261|0xd92d20|B&path=weight:5|color:0x2e47f0|enc:%7Bfr_Fsqa%7D%40kHw~%40g%7C%40cqD_%7CBowH_jAwyEobAkaE",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"maps",
+										"static"
+									],
+									"query": [
+										{
+											"key": "size",
+											"value": "800x500",
+											"description": "Required. WxH in pixels, 1 to 1280 per side."
+										},
+										{
+											"key": "style",
+											"value": "streets",
+											"description": "streets, dark, terrain, sunny or classic. Default: streets."
+										},
+										{
+											"key": "lang",
+											"value": "fr",
+											"description": "Label language: fr or ar. Default: fr."
+										},
+										{
+											"key": "scale",
+											"value": "2",
+											"description": "2 doubles the pixels for retina screens. Default: 1.",
+											"disabled": true
+										},
+										{
+											"key": "format",
+											"value": "webp",
+											"description": "png (default), webp or jpg.",
+											"disabled": true
+										},
+										{
+											"key": "marker",
+											"value": "36.7987,10.1713|0x2e47f0|A",
+											"description": "Start (Médina de Tunis), blue pin labelled A."
+										},
+										{
+											"key": "marker",
+											"value": "36.8528,10.3261|0xd92d20|B",
+											"description": "End (Carthage), red pin labelled B."
+										},
+										{
+											"key": "path",
+											"value": "weight:5|color:0x2e47f0|enc:%7Bfr_Fsqa%7D%40kHw~%40g%7C%40cqD_%7CBowH_jAwyEobAkaE",
+											"description": "weight:5|color:0xRRGGBB[AA]|enc:<polyline>. Placeholder polyline (6 points, Médina → Carthage): replace it with the URL-encoded `geometry` of Directions (GET) with geometry=polyline. enc: is always the last part. Repeatable, up to 20."
+										},
+										{
+											"key": "padding",
+											"value": "40",
+											"description": "Margin in pixels around the overlays when the image is auto-framed (0 to 300). Default: 40.",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "image/png"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "public, max-age=86400"
+								},
+								{
+									"key": "X-Cache",
+									"value": "MISS"
+								}
+							],
+							"body": "Binary PNG image, 800 × 500 px (not stored here): blue path from the Médina de Tunis (pin A) to Carthage (pin B), framed on the overlays with a 40 px margin."
+						}
+					],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', () => pm.response.to.have.status(200));",
+									"if (pm.response.code === 401) console.warn('401: set api_key in the TMaps environment.');",
+									"if (pm.response.code !== 200) console.warn(`${pm.response.code}: ${pm.response.text()}`);",
+									"pm.test('Returns a PNG image', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('image/png'));",
+									"pm.test('Image is not empty', () => pm.expect(pm.response.responseSize).to.be.above(0));"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Route thumbnail (POST, GeoJSON)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"size\": {\n    \"width\": 800,\n    \"height\": 500\n  },\n  \"style\": \"streets\",\n  \"lang\": \"fr\",\n  \"markers\": [\n    {\n      \"lat\": 36.7987,\n      \"lng\": 10.1713,\n      \"color\": \"0x2e47f0\",\n      \"label\": \"A\"\n    },\n    {\n      \"lat\": 36.8528,\n      \"lng\": 10.3261,\n      \"color\": \"0xd92d20\",\n      \"label\": \"B\"\n    }\n  ],\n  \"paths\": [\n    {\n      \"geojson\": {\n        \"type\": \"LineString\",\n        \"coordinates\": [\n          [\n            10.1713,\n            36.7987\n          ],\n          [\n            10.1815,\n            36.8002\n          ],\n          [\n            10.21,\n            36.81\n          ],\n          [\n            10.26,\n            36.83\n          ],\n          [\n            10.295,\n            36.842\n          ],\n          [\n            10.3261,\n            36.8528\n          ]\n        ]\n      },\n      \"color\": \"0x2e47f0\",\n      \"weight\": 5\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/maps/static",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"maps",
+								"static"
+							]
+						},
+						"description": "Same options as the GET request, as a JSON body (256 KB max): use it for long routes or many overlays that would make the URL too long. Returns the image.\n\n`size` is `{\"width\", \"height\"}` or `\"WxH\"`, `center` is `{\"lat\", \"lng\"}`. Each item of `paths` and `polygons` takes one of `polyline` (encoded, precision 5), `coordinates` (`[lat, lng]` pairs or `{lat, lng}`) or `geojson` (LineString / Polygon, coordinates in `[lng, lat]` order), plus `color`, `weight` and, for polygons, `fillcolor`. 10,000 points at most over all overlays.\n\n**Not live yet:** `/maps/static` is implemented but not deployed in production. These requests fail (404) until it is.\n\nDocs: https://www.tmaps.tn/documentation/api/static-maps · Live example: https://examples.tmaps.tn/06-static-map/"
+					},
+					"response": [
+						{
+							"name": "200, GeoJSON path with A and B",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"size\": {\n    \"width\": 800,\n    \"height\": 500\n  },\n  \"style\": \"streets\",\n  \"lang\": \"fr\",\n  \"markers\": [\n    {\n      \"lat\": 36.7987,\n      \"lng\": 10.1713,\n      \"color\": \"0x2e47f0\",\n      \"label\": \"A\"\n    },\n    {\n      \"lat\": 36.8528,\n      \"lng\": 10.3261,\n      \"color\": \"0xd92d20\",\n      \"label\": \"B\"\n    }\n  ],\n  \"paths\": [\n    {\n      \"geojson\": {\n        \"type\": \"LineString\",\n        \"coordinates\": [\n          [\n            10.1713,\n            36.7987\n          ],\n          [\n            10.1815,\n            36.8002\n          ],\n          [\n            10.21,\n            36.81\n          ],\n          [\n            10.26,\n            36.83\n          ],\n          [\n            10.295,\n            36.842\n          ],\n          [\n            10.3261,\n            36.8528\n          ]\n        ]\n      },\n      \"color\": \"0x2e47f0\",\n      \"weight\": 5\n    }\n  ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/maps/static",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"maps",
+										"static"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "image/png"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "public, max-age=86400"
+								},
+								{
+									"key": "X-Cache",
+									"value": "MISS"
+								}
+							],
+							"body": "Binary PNG image, 800 × 500 px (not stored here): the GeoJSON LineString drawn in blue with pins A and B, auto-framed."
+						}
+					],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', () => pm.response.to.have.status(200));",
+									"if (pm.response.code === 401) console.warn('401: set api_key in the TMaps environment.');",
+									"if (pm.response.code !== 200) console.warn(`${pm.response.code}: ${pm.response.text()}`);",
+									"pm.test('Returns a PNG image', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('image/png'));",
+									"pm.test('Image is not empty', () => pm.expect(pm.response.responseSize).to.be.above(0));"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Error, size missing",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/maps/static?center=36.8708,10.3417&zoom=16",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"maps",
+								"static"
+							],
+							"query": [
+								{
+									"key": "center",
+									"value": "36.8708,10.3417",
+									"description": "lat,lng of the image centre."
+								},
+								{
+									"key": "zoom",
+									"value": "16",
+									"description": "1 to 20."
+								}
+							]
+						},
+						"description": "Error example: `size` is missing. Errors are JSON with a status other than 200: `{\"error\": {\"code\", \"message\"}}`.\n\n| Status | Code | When |\n|---|---|---|\n| 400 | INVALID_REQUEST | Missing or invalid parameter |\n| 401 | MISSING_API_KEY / INVALID_API_KEY | No key or unknown key |\n| 404 | NOT_FOUND | Unknown style |\n| 413 | LIMIT_EXCEEDED | Image larger than 1280 px, too many overlays or points |\n| 504 | ENGINE_TIMEOUT | The map took too long to render |\n| 500 | ENGINE_ERROR | The map could not be rendered |\n\nWhen you load the image from code, check the status before using the body as an image.\n\n**Not live yet:** `/maps/static` is implemented but not deployed in production. These requests fail (404) until it is."
+					},
+					"response": [
+						{
+							"name": "400, size missing",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/maps/static?center=36.8708,10.3417&zoom=16",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"maps",
+										"static"
+									],
+									"query": [
+										{
+											"key": "center",
+											"value": "36.8708,10.3417",
+											"description": "lat,lng of the image centre."
+										},
+										{
+											"key": "zoom",
+											"value": "16",
+											"description": "1 to 20."
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n  \"error\": {\n    \"code\": \"INVALID_REQUEST\",\n    \"message\": \"size is required, e.g. size=800x500\"\n  }\n}"
+						}
+					],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 400', () => pm.response.to.have.status(400));",
+									"pm.test('Error is JSON, not an image', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+									"pm.test('Error code is INVALID_REQUEST', () => pm.expect(pm.response.json().error.code).to.eql('INVALID_REQUEST'));",
+									"console.log(pm.response.json().error.message);"
+								]
+							}
+						}
+					]
+				}
+			]
 		}
 	]
 }
