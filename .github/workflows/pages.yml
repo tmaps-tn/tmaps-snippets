@@ -17,11 +17,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  # Deux jobs, comme le modèle officiel de GitHub : deploy-pages ne voit l'artefact
+  # de façon fiable qu'une fois le job qui l'a envoyé terminé.
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     env:
       TMAPS_API_KEY: ${{ secrets.TMAPS_API_KEY }}
     steps:
@@ -37,5 +36,12 @@ jobs:
         with:
           path: demos
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v4
