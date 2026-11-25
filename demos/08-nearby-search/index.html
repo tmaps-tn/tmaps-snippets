@@ -127,7 +127,7 @@
       try {
         const res = await fetch(url);
         const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(`${res.status}: ${data.error ?? res.statusText}`);
+        if (!res.ok) throw new Error(`${res.status}: ${data.error?.message ?? data.error ?? res.statusText}`);
         render(data.results);
       } catch (error) {
         places.clearLayers();

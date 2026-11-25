@@ -45,7 +45,7 @@ async function geocode(q, signal) {
   });
   const res = await fetch(url, { signal });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(`${res.status}: ${data.error ?? res.statusText}`);
+  if (!res.ok) throw new Error(`${res.status}: ${data.error?.message ?? data.error ?? res.statusText}`);
   return data.results;
 }
 

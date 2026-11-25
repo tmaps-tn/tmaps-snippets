@@ -15,16 +15,20 @@ Ready-to-run, client-side code examples for the [TMaps](https://www.tmaps.tn) AP
 | 03 | [Vector map styles](demos/03-vector-maplibre-styles/) | Vector tiles | MapLibre GL | [Live](https://examples.tmaps.tn/03-vector-maplibre-styles/) |
 | 04 | [Address search](demos/04-geocoding-search/) | Forward geocoding | Leaflet | [Live](https://examples.tmaps.tn/04-geocoding-search/) |
 | 05 | [Address from a map click](demos/05-reverse-geocoding/) | Reverse geocoding | Leaflet | [Live](https://examples.tmaps.tn/05-reverse-geocoding/) |
+| 07 | [Directions](demos/07-directions/) | Directions | Leaflet | [Live](https://examples.tmaps.tn/07-directions/) |
 | 08 | [Nearby places](demos/08-nearby-search/) | Nearby search | Leaflet | [Live](https://examples.tmaps.tn/08-nearby-search/) |
+| 09 | [Delivery zone](demos/09-isochrone/) | Isochrone | Leaflet | [Live](https://examples.tmaps.tn/09-isochrone/) |
+| 10 | [Optimized delivery route](demos/10-optimized-route/) | Optimized routing | Leaflet | [Live](https://examples.tmaps.tn/10-optimized-route/) |
+| 11 | [Nearest driver](demos/11-distance-matrix/) | Distance matrix | Leaflet | [Live](https://examples.tmaps.tn/11-distance-matrix/) |
 | 12 | [Checkout address form](demos/12-checkout-address-form/) | Forward + reverse geocoding | Leaflet | [Live](https://examples.tmaps.tn/12-checkout-address-form/) |
 
-Coming soon: static map, directions, isochrone, optimized route and distance matrix examples ([pending/](pending/)).
+Coming soon: static map example ([pending/](pending/)).
 
 ## Postman collection
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://god.gw.postman.com/run-collection/59164577-39c61a9a-5dec-4a19-bfb0-78e040babbe5?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D59164577-39c61a9a-5dec-4a19-bfb0-78e040babbe5%26entityType%3Dcollection%26workspaceId%3Dd930590d-cd34-4179-bf0c-14ef875c22af)
 
-Try the API without writing code: fork the collection from the [TMaps public workspace](https://www.postman.com/tmaps-tn/tmaps-api) or import the [files in postman/](postman/) (tiles, forward and reverse geocoding, nearby search), set your key and send. Each request comes with documented parameters, example responses and tests.
+Try the API without writing code: fork the collection from the [TMaps public workspace](https://www.postman.com/tmaps-tn/tmaps-api) or import the [files in postman/](postman/) (tiles, geocoding and routing), set your key and send. Each request comes with documented parameters, example responses and tests.
 
 ## CodePen and JSFiddle
 

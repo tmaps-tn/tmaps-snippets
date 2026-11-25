@@ -7,7 +7,7 @@ Compare real travel times from several drivers to a customer and dispatch the ne
 ## API request
 
 ```http
-POST https://api.tmaps.tn/distance-matrix?api_key=YOUR_API_KEY
+POST https://api.tmaps.tn/routing/matrix?api_key=YOUR_API_KEY
 
 { "origins": [ …drivers ], "destinations": [ customer ], "profile": "driving" }
 ```

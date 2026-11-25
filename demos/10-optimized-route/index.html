@@ -50,7 +50,7 @@
             <select id="optimize"><option value="duration">Shortest time</option><option value="distance">Shortest distance</option></select>
           </label>
           <label class="field">Profile
-            <select id="profile"><option value="driving">Driving</option><option value="truck">Truck</option><option value="cycling">Cycling</option></select>
+            <select id="profile"><option value="driving">Driving</option><option value="truck">Truck</option><option value="cycling">Cycling</option><option value="scooter">Scooter</option></select>
           </label>
         </div>
         <label class="check"><input type="checkbox" id="roundtrip" checked> Return to the depot</label>
@@ -160,7 +160,7 @@
         });
         const data = await res.json().catch(() => ({}));
         if (res.status === 404) throw new Error('No route could be calculated: a stop may be outside the coverage area.');
-        if (!res.ok) throw new Error(`${res.status}: ${data.error ?? res.statusText}`);
+        if (!res.ok) throw new Error(`${res.status}: ${data.error?.message ?? data.error ?? res.statusText}`);
         render(data);
       } catch (error) {
         demo.showError(error);

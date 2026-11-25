@@ -47,7 +47,7 @@
       <div class="controls">
         <div class="row">
           <label class="field">Profile
-            <select id="profile"><option value="driving">Driving</option><option value="walking">Walking</option><option value="cycling">Cycling</option><option value="truck">Truck</option></select>
+            <select id="profile"><option value="driving">Driving</option><option value="walking">Walking</option><option value="cycling">Cycling</option><option value="truck">Truck</option><option value="scooter">Scooter</option></select>
           </label>
           <label class="field">Instructions
             <select id="language"><option value="en">English</option><option value="fr">French</option><option value="ar">Arabic</option></select>
@@ -76,7 +76,7 @@
         <ul>
           <li>Profiles: <code>driving</code>, <code>walking</code>, <code>cycling</code> and <code>truck</code> (avoids roads closed to heavy vehicles).</li>
           <li>For more than two points, send a <code>POST</code> with a <code>waypoints</code> array (up to 25).</li>
-          <li><code>avoid</code> accepts <code>tolls</code>, <code>highways</code> and <code>ferries</code>. <code>alternatives=true</code> returns up to two other routes.</li>
+          <li><code>avoid</code> accepts <code>tolls</code>, <code>highways</code>, <code>ferries</code> and <code>unpaved</code>. <code>departure_time</code> or <code>arrival_time</code> (local time, e.g. <code>2026-12-01T08:30</code>) give the times of a trip at a given hour. <code>alternatives=true</code> returns up to two other routes.</li>
           <li>Distances are in meters and durations in seconds.</li>
         </ul>
         <p class="links">
@@ -129,7 +129,7 @@
         const res = await fetch(url);
         const data = await res.json().catch(() => ({}));
         if (res.status === 404) throw new Error('No route found between these points.');
-        if (!res.ok) throw new Error(`${res.status}: ${data.error ?? res.statusText}`);
+        if (!res.ok) throw new Error(`${res.status}: ${data.error?.message ?? data.error ?? res.statusText}`);
         render(data);
       } catch (error) {
         route.clearLayers();

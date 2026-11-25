@@ -31,8 +31,13 @@ https://raw.githubusercontent.com/tmaps-tn/tmaps-snippets/main/postman/TMaps-API
 | Geocoding | Forward geocoding | `GET https://api.tmaps.tn/geocoding/forward` |
 | Geocoding | Reverse geocoding | `GET https://api.tmaps.tn/geocoding/reverse` |
 | Geocoding | Nearby search | `GET https://api.tmaps.tn/geocoding/nearby` |
+| Routing | Directions (GET / POST) | `GET` / `POST https://api.tmaps.tn/routing/direction` |
+| Routing | Matrix | `POST https://api.tmaps.tn/routing/matrix` |
+| Routing | Isochrone | `POST https://api.tmaps.tn/routing/isochrone` |
+| Routing | Optimized tour | `POST https://api.tmaps.tn/routing/optimized` |
+| Routing | Status | `GET https://api.tmaps.tn/routing/status` |
 
-Each request has its parameters documented, saved example responses and tests. Optional parameters are included but disabled: tick them to try them.
+Each request has its parameters documented; the Maps and Geocoding requests also have saved example responses and tests. Optional parameters are included but disabled: tick them to try them.
 
 ## Run from the command line
 

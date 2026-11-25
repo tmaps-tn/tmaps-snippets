@@ -50,7 +50,7 @@
       <div class="controls">
         <div class="row">
           <label class="field">Profile
-            <select id="profile"><option value="driving">Driving</option><option value="cycling">Cycling</option><option value="walking">Walking</option><option value="truck">Truck</option></select>
+            <select id="profile"><option value="driving">Driving</option><option value="cycling">Cycling</option><option value="walking">Walking</option><option value="truck">Truck</option><option value="scooter">Scooter</option></select>
           </label>
           <label class="field">Contours
             <select id="contours">
@@ -134,7 +134,7 @@
         });
         const data = await res.json().catch(() => ({}));
         if (res.status === 404) throw new Error('This point is outside the coverage area.');
-        if (!res.ok) throw new Error(`${res.status}: ${data.error ?? res.statusText}`);
+        if (!res.ok) throw new Error(`${res.status}: ${data.error?.message ?? data.error ?? res.statusText}`);
         render(data, metric);
       } catch (error) {
         zones.clearLayers();
