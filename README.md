@@ -15,6 +15,7 @@ Ready-to-run, client-side code examples for the [TMaps](https://www.tmaps.tn) AP
 | 03 | [Vector map styles](demos/03-vector-maplibre-styles/) | Vector tiles | MapLibre GL | [Live](https://examples.tmaps.tn/03-vector-maplibre-styles/) |
 | 04 | [Address search](demos/04-geocoding-search/) | Forward geocoding | Leaflet | [Live](https://examples.tmaps.tn/04-geocoding-search/) |
 | 05 | [Address from a map click](demos/05-reverse-geocoding/) | Reverse geocoding | Leaflet | [Live](https://examples.tmaps.tn/05-reverse-geocoding/) |
+| 06 | [Static map image](demos/06-static-map/) | Static maps | Leaflet | [Live](https://examples.tmaps.tn/06-static-map/) |
 | 07 | [Directions](demos/07-directions/) | Directions | Leaflet | [Live](https://examples.tmaps.tn/07-directions/) |
 | 08 | [Nearby places](demos/08-nearby-search/) | Nearby search | Leaflet | [Live](https://examples.tmaps.tn/08-nearby-search/) |
 | 09 | [Delivery zone](demos/09-isochrone/) | Isochrone | Leaflet | [Live](https://examples.tmaps.tn/09-isochrone/) |
@@ -22,8 +23,6 @@ Ready-to-run, client-side code examples for the [TMaps](https://www.tmaps.tn) AP
 | 11 | [Nearest driver](demos/11-distance-matrix/) | Distance matrix | Leaflet | [Live](https://examples.tmaps.tn/11-distance-matrix/) |
 | 12 | [Checkout address form](demos/12-checkout-address-form/) | Forward + reverse geocoding | Leaflet | [Live](https://examples.tmaps.tn/12-checkout-address-form/) |
 | 13 | [Plus Code from a map click](demos/13-plus-code/) | Plus Codes | Leaflet | [Live](https://examples.tmaps.tn/13-plus-code/) |
-
-Coming soon: static map example ([pending/](pending/)).
 
 ## Postman collection
 
@@ -44,7 +43,6 @@ servers/node/     Node.js server (no dependencies)
 servers/python/   Python server (standard library only)
 postman/          Postman collection and environment
 playgrounds/      Code of the CodePen and JSFiddle examples (HTML, CSS, JS panels)
-pending/          Examples waiting for their API endpoint in production
 docker-compose.yml
 ```
 

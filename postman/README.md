@@ -38,9 +38,9 @@ https://raw.githubusercontent.com/tmaps-tn/tmaps-snippets/main/postman/TMaps-API
 | Routing | Isochrone | `POST https://api.tmaps.tn/routing/isochrone` |
 | Routing | Optimized tour | `POST https://api.tmaps.tn/routing/optimized` |
 | Routing | Status | `GET https://api.tmaps.tn/routing/status` |
-| Static maps (not live yet) | Listing thumbnail (GET) | `GET https://api.tmaps.tn/maps/static` |
-| Static maps (not live yet) | Route thumbnail (GET / POST, GeoJSON) | `GET` / `POST https://api.tmaps.tn/maps/static` |
-| Static maps (not live yet) | Error, size missing | `GET https://api.tmaps.tn/maps/static` |
+| Static maps | Listing thumbnail (GET) | `GET https://api.tmaps.tn/maps/static` |
+| Static maps | Route thumbnail (GET / POST, GeoJSON) | `GET` / `POST https://api.tmaps.tn/maps/static` |
+| Static maps | Error, size missing | `GET https://api.tmaps.tn/maps/static` |
 
 Each request has its parameters documented; the Maps and Geocoding requests also have saved example responses and tests. Optional parameters are included but disabled: tick them to try them.
 
@@ -55,5 +55,3 @@ npx newman run postman/TMaps-API.postman_collection.json \
 ## About the API key
 
 The key is sent in the `api_key` query parameter, set once on the collection and inherited by every request. Postman calls the API from a server context (no `Origin` header), so the key's authorized domains don't apply. For backend use, create a dedicated key with no authorized domain: it works from your servers and is rejected in browsers if it ever leaks.
-
-The **Static maps** requests are ready but `/maps/static` is not deployed in production yet: they fail (404) until it is.

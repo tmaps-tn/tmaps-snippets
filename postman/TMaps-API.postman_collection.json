@@ -1532,7 +1532,7 @@
 		},
 		{
 			"name": "Static maps",
-			"description": "Map images (PNG, WebP or JPEG) of a place, a route or an area, with markers, paths and polygons, built from a plain URL or a JSON body. Put the URL in an `<img>` tag, an email template or a PDF.\n\nShared parameters: `size` (required, WxH up to 1280 × 1280), `scale` (1 or 2), `style` (streets, dark, terrain, sunny, classic), `lang` (fr, ar), `format` (png, webp, jpg). Framing: `center` + `zoom` (1 to 20), `bbox`, or nothing to fit the overlays with `padding` (40 px by default). Errors: `{\"error\": {\"code\", \"message\"}}` with INVALID_REQUEST, NOT_FOUND, LIMIT_EXCEEDED, ENGINE_TIMEOUT, ENGINE_ERROR.\n\n**Not live yet:** `/maps/static` is implemented but not deployed in production. These requests fail (404) until it is.",
+			"description": "Map images (PNG, WebP or JPEG) of a place, a route or an area, with markers, paths and polygons, built from a plain URL or a JSON body. Put the URL in an `<img>` tag, an email template or a PDF.\n\nShared parameters: `size` (required, WxH up to 1280 × 1280), `scale` (1 or 2), `style` (streets, dark, terrain, sunny, classic), `lang` (fr, ar), `format` (png, webp, jpg). Framing: `center` + `zoom` (1 to 20), `bbox`, or nothing to fit the overlays with `padding` (40 px by default). Errors: `{\"error\": {\"code\", \"message\"}}` with INVALID_REQUEST, NOT_FOUND, LIMIT_EXCEEDED, ENGINE_TIMEOUT, ENGINE_ERROR.",
 			"item": [
 				{
 					"name": "Listing thumbnail (GET)",
@@ -1599,7 +1599,7 @@
 								}
 							]
 						},
-						"description": "Map image of one place with a pin, for a property listing, a store page or an email.\n\nFrame it with `center` + `zoom`, with `bbox`, or give neither to fit the overlays. Put the URL in an `<img>` tag: `<img src=\"https://api.tmaps.tn/maps/static?center=36.8708,10.3417&zoom=16&size=800x500&marker=36.8708,10.3417|red&api_key=YOUR_API_KEY\">`.\n\n**Not live yet:** `/maps/static` is implemented but not deployed in production. These requests fail (404) until it is.\n\nDocs: https://www.tmaps.tn/documentation/api/static-maps · Live example: https://examples.tmaps.tn/06-static-map/"
+						"description": "Map image of one place with a pin, for a property listing, a store page or an email.\n\nFrame it with `center` + `zoom`, with `bbox`, or give neither to fit the overlays. Put the URL in an `<img>` tag: `<img src=\"https://api.tmaps.tn/maps/static?center=36.8708,10.3417&zoom=16&size=800x500&marker=36.8708,10.3417|red&api_key=YOUR_API_KEY\">`.\n\nDocs: https://www.tmaps.tn/documentation/api/static-maps · Live example: https://examples.tmaps.tn/06-static-map/"
 					},
 					"response": [
 						{
@@ -1769,7 +1769,7 @@
 								}
 							]
 						},
-						"description": "Route thumbnail: two markers and a path, auto-framed (no `center`, no `zoom`).\n\nThe `geometry` returned by `GET /routing/direction` (default `geometry=polyline`, precision 5) goes straight after `enc:`, URL-encoded: an encoded polyline can contain `|`, `\\`, `{` or `}`. The value here is a short placeholder polyline so the request runs as is.\n\nPaths also accept points: `path=color:red|36.80,10.17|36.85,10.33`. Polygons: `polygon=fillcolor:0x2e47f033|color:0x2e47f0|weight:2|lat,lng|lat,lng|lat,lng`.\n\n**Not live yet:** `/maps/static` is implemented but not deployed in production. These requests fail (404) until it is.\n\nDocs: https://www.tmaps.tn/documentation/api/static-maps · Live example: https://examples.tmaps.tn/06-static-map/"
+						"description": "Route thumbnail: two markers and a path, auto-framed (no `center`, no `zoom`).\n\nThe `geometry` returned by `GET /routing/direction` (default `geometry=polyline`, precision 5) goes straight after `enc:`, URL-encoded: an encoded polyline can contain `|`, `\\`, `{` or `}`. The value here is a short placeholder polyline so the request runs as is.\n\nPaths also accept points: `path=color:red|36.80,10.17|36.85,10.33`. Polygons: `polygon=fillcolor:0x2e47f033|color:0x2e47f0|weight:2|lat,lng|lat,lng|lat,lng`.\n\nDocs: https://www.tmaps.tn/documentation/api/static-maps · Live example: https://examples.tmaps.tn/06-static-map/"
 					},
 					"response": [
 						{
@@ -1903,7 +1903,7 @@
 								"static"
 							]
 						},
-						"description": "Same options as the GET request, as a JSON body (256 KB max): use it for long routes or many overlays that would make the URL too long. Returns the image.\n\n`size` is `{\"width\", \"height\"}` or `\"WxH\"`, `center` is `{\"lat\", \"lng\"}`. Each item of `paths` and `polygons` takes one of `polyline` (encoded, precision 5), `coordinates` (`[lat, lng]` pairs or `{lat, lng}`) or `geojson` (LineString / Polygon, coordinates in `[lng, lat]` order), plus `color`, `weight` and, for polygons, `fillcolor`. 10,000 points at most over all overlays.\n\n**Not live yet:** `/maps/static` is implemented but not deployed in production. These requests fail (404) until it is.\n\nDocs: https://www.tmaps.tn/documentation/api/static-maps · Live example: https://examples.tmaps.tn/06-static-map/"
+						"description": "Same options as the GET request, as a JSON body (256 KB max): use it for long routes or many overlays that would make the URL too long. Returns the image.\n\n`size` is `{\"width\", \"height\"}` or `\"WxH\"`, `center` is `{\"lat\", \"lng\"}`. Each item of `paths` and `polygons` takes one of `polyline` (encoded, precision 5), `coordinates` (`[lat, lng]` pairs or `{lat, lng}`) or `geojson` (LineString / Polygon, coordinates in `[lng, lat]` order), plus `color`, `weight` and, for polygons, `fillcolor`. 10,000 points at most over all overlays.\n\nDocs: https://www.tmaps.tn/documentation/api/static-maps · Live example: https://examples.tmaps.tn/06-static-map/"
 					},
 					"response": [
 						{
@@ -1999,7 +1999,7 @@
 								}
 							]
 						},
-						"description": "Error example: `size` is missing. Errors are JSON with a status other than 200: `{\"error\": {\"code\", \"message\"}}`.\n\n| Status | Code | When |\n|---|---|---|\n| 400 | INVALID_REQUEST | Missing or invalid parameter |\n| 401 | MISSING_API_KEY / INVALID_API_KEY | No key or unknown key |\n| 404 | NOT_FOUND | Unknown style |\n| 413 | LIMIT_EXCEEDED | Image larger than 1280 px, too many overlays or points |\n| 504 | ENGINE_TIMEOUT | The map took too long to render |\n| 500 | ENGINE_ERROR | The map could not be rendered |\n\nWhen you load the image from code, check the status before using the body as an image.\n\n**Not live yet:** `/maps/static` is implemented but not deployed in production. These requests fail (404) until it is."
+						"description": "Error example: `size` is missing. Errors are JSON with a status other than 200: `{\"error\": {\"code\", \"message\"}}`.\n\n| Status | Code | When |\n|---|---|---|\n| 400 | INVALID_REQUEST | Missing or invalid parameter |\n| 401 | MISSING_API_KEY / INVALID_API_KEY | No key or unknown key |\n| 404 | NOT_FOUND | Unknown style |\n| 413 | LIMIT_EXCEEDED | Image larger than 1280 px, too many overlays or points |\n| 504 | ENGINE_TIMEOUT | The map took too long to render |\n| 500 | ENGINE_ERROR | The map could not be rendered |\n\nWhen you load the image from code, check the status before using the body as an image."
 					},
 					"response": [
 						{

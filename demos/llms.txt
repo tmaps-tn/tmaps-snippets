@@ -16,6 +16,7 @@ Key facts:
 - [01 Map with Leaflet](https://examples.tmaps.tn/01-raster-leaflet/): raster XYZ tiles `https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=…`, zoom 0 to 18.
 - [02 Map with OpenLayers](https://examples.tmaps.tn/02-raster-openlayers/): same tiles with `ol.source.XYZ` and a shareable view in the URL.
 - [03 Vector map styles with MapLibre GL](https://examples.tmaps.tn/03-vector-maplibre-styles/): styles `streets`, `dark`, `terrain`, `sunny` at `https://tiles.tmaps.tn/v-tile/{style}.json?api_key=…`.
+- [06 Static map image](https://examples.tmaps.tn/06-static-map/): `GET /maps/static?center=lat,lng&zoom=16&size=800x500&marker=lat,lng|red` returns a PNG (or `format=webp|jpg`). Frame with `center` + `zoom`, `bbox`, or neither to fit the overlays; `scale=2` for high-density screens, `size` up to 1280 per side. `path=…|enc:<polyline>` draws a route `geometry` from `/routing/direction`. `POST` with a JSON body (`markers`, `paths`, `polygons`) for long routes. Usable in `<img>`, emails and PDFs.
 
 ## Find addresses and places
 
