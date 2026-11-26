@@ -2,7 +2,7 @@
 
 Ready-to-run Postman collection for the [TMaps](https://www.tmaps.tn) APIs: map tiles, forward geocoding, reverse geocoding, nearby search and Plus Codes for Tunisia.
 
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://god.gw.postman.com/run-collection/59164577-18888c9c-fb70-4be1-881d-7517a3b8425e?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D59164577-18888c9c-fb70-4be1-881d-7517a3b8425e%26entityType%3Dcollection%26workspaceId%3Dd930590d-cd34-4179-bf0c-14ef875c22af)
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://god.gw.postman.com/run-collection/59164577-be0e8327-76a5-4a14-a3da-bc1f7a0f3048?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D59164577-be0e8327-76a5-4a14-a3da-bc1f7a0f3048%26entityType%3Dcollection%26workspaceId%3Dd930590d-cd34-4179-bf0c-14ef875c22af)
 
 Public workspace: https://www.postman.com/tmaps-tn/tmaps-api
 
