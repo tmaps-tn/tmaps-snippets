@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://examples.tmaps.tn/</loc><lastmod>2026-11-25</lastmod></url>
+  <url><loc>https://examples.tmaps.tn/</loc><lastmod>2026-11-26</lastmod></url>
   <url><loc>https://examples.tmaps.tn/01-raster-leaflet/</loc><lastmod>2026-10-23</lastmod></url>
   <url><loc>https://examples.tmaps.tn/02-raster-openlayers/</loc><lastmod>2026-10-23</lastmod></url>
   <url><loc>https://examples.tmaps.tn/03-vector-maplibre-styles/</loc><lastmod>2026-10-23</lastmod></url>
@@ -12,4 +12,5 @@
   <url><loc>https://examples.tmaps.tn/10-optimized-route/</loc><lastmod>2026-11-25</lastmod></url>
   <url><loc>https://examples.tmaps.tn/11-distance-matrix/</loc><lastmod>2026-11-25</lastmod></url>
   <url><loc>https://examples.tmaps.tn/12-checkout-address-form/</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://examples.tmaps.tn/13-plus-code/</loc><lastmod>2026-11-26</lastmod></url>
 </urlset>

@@ -1,6 +1,6 @@
 # TMaps API Postman collection
 
-Ready-to-run Postman collection for the [TMaps](https://www.tmaps.tn) APIs: map tiles, forward geocoding, reverse geocoding and nearby search for Tunisia.
+Ready-to-run Postman collection for the [TMaps](https://www.tmaps.tn) APIs: map tiles, forward geocoding, reverse geocoding, nearby search and Plus Codes for Tunisia.
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://god.gw.postman.com/run-collection/59164577-18888c9c-fb70-4be1-881d-7517a3b8425e?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D59164577-18888c9c-fb70-4be1-881d-7517a3b8425e%26entityType%3Dcollection%26workspaceId%3Dd930590d-cd34-4179-bf0c-14ef875c22af)
 
@@ -31,6 +31,8 @@ https://raw.githubusercontent.com/tmaps-tn/tmaps-snippets/main/postman/TMaps-API
 | Geocoding | Forward geocoding | `GET https://api.tmaps.tn/geocoding/forward` |
 | Geocoding | Reverse geocoding | `GET https://api.tmaps.tn/geocoding/reverse` |
 | Geocoding | Nearby search | `GET https://api.tmaps.tn/geocoding/nearby` |
+| Geocoding | Plus code | `GET https://api.tmaps.tn/geocoding/pluscode?lat=&lng=` |
+| Geocoding | Plus code, tile | `GET https://api.tmaps.tn/geocoding/pluscode?zoom=&x=&y=` |
 | Routing | Directions (GET / POST) | `GET` / `POST https://api.tmaps.tn/routing/direction` |
 | Routing | Matrix | `POST https://api.tmaps.tn/routing/matrix` |
 | Routing | Isochrone | `POST https://api.tmaps.tn/routing/isochrone` |

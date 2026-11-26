@@ -21,6 +21,7 @@ Ready-to-run, client-side code examples for the [TMaps](https://www.tmaps.tn) AP
 | 10 | [Optimized delivery route](demos/10-optimized-route/) | Optimized routing | Leaflet | [Live](https://examples.tmaps.tn/10-optimized-route/) |
 | 11 | [Nearest driver](demos/11-distance-matrix/) | Distance matrix | Leaflet | [Live](https://examples.tmaps.tn/11-distance-matrix/) |
 | 12 | [Checkout address form](demos/12-checkout-address-form/) | Forward + reverse geocoding | Leaflet | [Live](https://examples.tmaps.tn/12-checkout-address-form/) |
+| 13 | [Plus Code from a map click](demos/13-plus-code/) | Plus Codes | Leaflet | [Live](https://examples.tmaps.tn/13-plus-code/) |
 
 Coming soon: static map example ([pending/](pending/)).
 

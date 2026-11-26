@@ -146,7 +146,7 @@
 		},
 		{
 			"name": "Geocoding",
-			"description": "Addresses to coordinates, coordinates to addresses, and places around a point.",
+			"description": "Addresses to coordinates, coordinates to addresses, places around a point, and Plus Codes.",
 			"item": [
 				{
 					"name": "Forward geocoding",
@@ -573,6 +573,320 @@
 								}
 							],
 							"body": "{\n  \"query\": {\n    \"lat\": 36.8002,\n    \"lng\": 10.1815,\n    \"radius\": 500\n  },\n  \"count\": 3,\n  \"results\": [\n    {\n      \"id\": \"tmaps_poi_wKdB6rUnGu\",\n      \"name\": \"Baguette & Baguette\",\n      \"category\": \"restaurant\",\n      \"lat\": 36.80043949982384,\n      \"lng\": 10.1814996,\n      \"distance\": 27,\n      \"address\": \"Baguette & Baguette, Bab El Bhar, Tunis, Tunisie\"\n    },\n    {\n      \"id\": \"tmaps_poi_KeJy61JxR9\",\n      \"name\": \"كو زت\",\n      \"category\": \"restaurant\",\n      \"lat\": 36.8000958998238,\n      \"lng\": 10.181775599999998,\n      \"distance\": 27,\n      \"address\": \"كو زت, Bab El Bhar, Tunis, Tunisie\"\n    },\n    {\n      \"id\": \"tmaps_poi_0Vhv5XO1sp\",\n      \"name\": \"Le Vieux Port\",\n      \"category\": \"restaurant\",\n      \"lat\": 36.80069369982386,\n      \"lng\": 10.1817314,\n      \"distance\": 59,\n      \"address\": \"Le Vieux Port, Bab El Bhar, Tunis, Tunisie\"\n    }\n  ],\n  \"meta\": {\n    \"processing_time_ms\": 66,\n    \"provider\": \"TMaps Geocoding API v1\",\n    \"attribution\": \"© TMaps.tn | Data © OpenStreetMap contributors\"\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "Plus code",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/geocoding/pluscode?lat={{lat}}&lng={{lng}}&zoom=18",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"geocoding",
+								"pluscode"
+							],
+							"query": [
+								{
+									"key": "lat",
+									"description": "Required (or zoom, x and y). Latitude, WGS84 decimal degrees.",
+									"value": "{{lat}}"
+								},
+								{
+									"key": "lng",
+									"description": "Required (or zoom, x and y). Longitude, WGS84 decimal degrees.",
+									"value": "{{lng}}"
+								},
+								{
+									"key": "zoom",
+									"value": "18",
+									"description": "Precision of the code: up to 6 gives 4 digits, up to 10 gives 6, up to 14 gives 8 (about 275 m), up to 18 gives 10 (about 14 m), above 18 gives 11 (about 3 m). Default: 14 characters."
+								}
+							]
+						},
+						"description": "Turns GPS coordinates into a Plus Code (Open Location Code), a short address such as `8F8GR54J+JJ` that works in Google Maps and any app that supports Plus Codes.\n\n`zoom` sets the length of the code. `zoom=18` gives 10 digits, a cell of about 14 m, the usual precision to show. Without `zoom` the code has 14 characters.\n\nUses the `lat` / `lng` collection variables (Tunis center by default, or the last **Forward geocoding** result).\n\nLive example: https://examples.tmaps.tn/13-plus-code/"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', () => pm.response.to.have.status(200));",
+									"if (pm.response.code === 401) console.warn('401: set api_key in the TMaps environment.');",
+									"const body = pm.response.json();",
+									"pm.test('Returns a Plus Code', () => pm.expect(body.plus_code).to.match(/^[23456789CFGHJMPQRVWX]{8}\\+/));",
+									"pm.test('Echoes the coordinates', () => { pm.expect(body.lat).to.be.a('number'); pm.expect(body.lng).to.be.a('number'); });"
+								]
+							}
+						}
+					],
+					"response": [
+						{
+							"name": "200, zoom=18 (10 digits, about 14 m)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/geocoding/pluscode?lat=36.8065&lng=10.1815&zoom=18",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"geocoding",
+										"pluscode"
+									],
+									"query": [
+										{
+											"key": "lat",
+											"description": "Required (or zoom, x and y). Latitude, WGS84 decimal degrees.",
+											"value": "36.8065"
+										},
+										{
+											"key": "lng",
+											"description": "Required (or zoom, x and y). Longitude, WGS84 decimal degrees.",
+											"value": "10.1815"
+										},
+										{
+											"key": "zoom",
+											"value": "18",
+											"description": "Precision of the code: up to 6 gives 4 digits, up to 10 gives 6, up to 14 gives 8 (about 275 m), up to 18 gives 10 (about 14 m), above 18 gives 11 (about 3 m). Default: 14 characters."
+										}
+									]
+								},
+								"description": "Turns GPS coordinates into a Plus Code (Open Location Code), a short address such as `8F8GR54J+JJ` that works in Google Maps and any app that supports Plus Codes.\n\n`zoom` sets the length of the code. `zoom=18` gives 10 digits, a cell of about 14 m, the usual precision to show. Without `zoom` the code has 14 characters.\n\nUses the `lat` / `lng` collection variables (Tunis center by default, or the last **Forward geocoding** result).\n\nLive example: https://examples.tmaps.tn/13-plus-code/"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"body": "{\n  \"lat\": 36.8065,\n  \"lng\": 10.1815,\n  \"plus_code\": \"8F8GR54J+JJ\"\n}"
+						},
+						{
+							"name": "200, no zoom (14 characters)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/geocoding/pluscode?lat=36.8065&lng=10.1815",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"geocoding",
+										"pluscode"
+									],
+									"query": [
+										{
+											"key": "lat",
+											"description": "Required (or zoom, x and y). Latitude, WGS84 decimal degrees.",
+											"value": "36.8065"
+										},
+										{
+											"key": "lng",
+											"description": "Required (or zoom, x and y). Longitude, WGS84 decimal degrees.",
+											"value": "10.1815"
+										},
+										{
+											"key": "zoom",
+											"value": "18",
+											"description": "Precision of the code: up to 6 gives 4 digits, up to 10 gives 6, up to 14 gives 8 (about 275 m), up to 18 gives 10 (about 14 m), above 18 gives 11 (about 3 m). Default: 14 characters.",
+											"disabled": true
+										}
+									]
+								},
+								"description": "Turns GPS coordinates into a Plus Code (Open Location Code), a short address such as `8F8GR54J+JJ` that works in Google Maps and any app that supports Plus Codes.\n\n`zoom` sets the length of the code. `zoom=18` gives 10 digits, a cell of about 14 m, the usual precision to show. Without `zoom` the code has 14 characters.\n\nUses the `lat` / `lng` collection variables (Tunis center by default, or the last **Forward geocoding** result).\n\nLive example: https://examples.tmaps.tn/13-plus-code/"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"body": "{\n  \"lat\": 36.8065,\n  \"lng\": 10.1815,\n  \"plus_code\": \"8F8GR54J+JJ2222\"\n}"
+						},
+						{
+							"name": "400, lat not a number",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/geocoding/pluscode?lat=abc&lng=10.1815&zoom=18",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"geocoding",
+										"pluscode"
+									],
+									"query": [
+										{
+											"key": "lat",
+											"description": "Required (or zoom, x and y). Latitude, WGS84 decimal degrees.",
+											"value": "abc"
+										},
+										{
+											"key": "lng",
+											"description": "Required (or zoom, x and y). Longitude, WGS84 decimal degrees.",
+											"value": "10.1815"
+										},
+										{
+											"key": "zoom",
+											"value": "18",
+											"description": "Precision of the code: up to 6 gives 4 digits, up to 10 gives 6, up to 14 gives 8 (about 275 m), up to 18 gives 10 (about 14 m), above 18 gives 11 (about 3 m). Default: 14 characters."
+										}
+									]
+								},
+								"description": "Turns GPS coordinates into a Plus Code (Open Location Code), a short address such as `8F8GR54J+JJ` that works in Google Maps and any app that supports Plus Codes.\n\n`zoom` sets the length of the code. `zoom=18` gives 10 digits, a cell of about 14 m, the usual precision to show. Without `zoom` the code has 14 characters.\n\nUses the `lat` / `lng` collection variables (Tunis center by default, or the last **Forward geocoding** result).\n\nLive example: https://examples.tmaps.tn/13-plus-code/"
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"body": "{\n  \"error\": \"lat must be a number\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Plus code, tile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/geocoding/pluscode?zoom=14&x=8655&y=6389",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"geocoding",
+								"pluscode"
+							],
+							"query": [
+								{
+									"key": "zoom",
+									"value": "14",
+									"description": "Required. Zoom level of the tile."
+								},
+								{
+									"key": "x",
+									"value": "8655",
+									"description": "Required. Tile column (XYZ scheme)."
+								},
+								{
+									"key": "y",
+									"value": "6389",
+									"description": "Required. Tile row (XYZ scheme)."
+								}
+							]
+						},
+						"description": "Returns the Plus Code of the center of a map tile, for example to label the tile under the cursor or the current view. The code always has 10 digits (about 14 m); `lat` / `lng` are the coordinates of the tile center.\n\nTiles use the same XYZ scheme as the **Raster tile (PNG)** request: `zoom=14&x=8655&y=6389` is a tile over Tunis.\n\nSend either `lat` and `lng`, or `zoom`, `x` and `y`: with neither, the API answers `400`."
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', () => pm.response.to.have.status(200));",
+									"if (pm.response.code === 401) console.warn('401: set api_key in the TMaps environment.');",
+									"const body = pm.response.json();",
+									"pm.test('Returns a 10 digit Plus Code', () => pm.expect(body.plus_code).to.match(/^[23456789CFGHJMPQRVWX]{8}\\+[23456789CFGHJMPQRVWX]{2}$/));",
+									"pm.test('Returns the tile center', () => { pm.expect(body.lat).to.be.a('number'); pm.expect(body.lng).to.be.a('number'); });"
+								]
+							}
+						}
+					],
+					"response": [
+						{
+							"name": "200, tile 14/8655/6389 (Tunis)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/geocoding/pluscode?zoom=14&x=8655&y=6389",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"geocoding",
+										"pluscode"
+									],
+									"query": [
+										{
+											"key": "zoom",
+											"value": "14",
+											"description": "Required. Zoom level of the tile."
+										},
+										{
+											"key": "x",
+											"value": "8655",
+											"description": "Required. Tile column (XYZ scheme)."
+										},
+										{
+											"key": "y",
+											"value": "6389",
+											"description": "Required. Tile row (XYZ scheme)."
+										}
+									]
+								},
+								"description": "Returns the Plus Code of the center of a map tile, for example to label the tile under the cursor or the current view. The code always has 10 digits (about 14 m); `lat` / `lng` are the coordinates of the tile center.\n\nTiles use the same XYZ scheme as the **Raster tile (PNG)** request: `zoom=14&x=8655&y=6389` is a tile over Tunis.\n\nSend either `lat` and `lng`, or `zoom`, `x` and `y`: with neither, the API answers `400`."
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"body": "{\n  \"lat\": 36.78289206199065,\n  \"lng\": 10.184326171875,\n  \"plus_code\": \"8F8GQ5MM+5P\"\n}"
+						},
+						{
+							"name": "400, no coordinates",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/geocoding/pluscode",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"geocoding",
+										"pluscode"
+									],
+									"query": []
+								},
+								"description": "Returns the Plus Code of the center of a map tile, for example to label the tile under the cursor or the current view. The code always has 10 digits (about 14 m); `lat` / `lng` are the coordinates of the tile center.\n\nTiles use the same XYZ scheme as the **Raster tile (PNG)** request: `zoom=14&x=8655&y=6389` is a tile over Tunis.\n\nSend either `lat` and `lng`, or `zoom`, `x` and `y`: with neither, the API answers `400`."
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"body": "{\n  \"error\": \"provide either lat&lng or zoom&x&y query parameters\"\n}"
 						}
 					]
 				}

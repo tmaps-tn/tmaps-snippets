@@ -22,6 +22,7 @@ Key facts:
 - [04 Address search (forward geocoding)](https://examples.tmaps.tn/04-geocoding-search/): `GET /geocoding/forward?q=…&country=TN&limit=5&proximity=lat,lng`. Returns `confidence` (0 to 1); save coordinates when ≥ 0.85.
 - [05 Address from a map click (reverse geocoding)](https://examples.tmaps.tn/05-reverse-geocoding/): `GET /geocoding/reverse?lat=…&lng=…`. Returns the nearest address and its `distance` in meters.
 - [08 Nearby places](https://examples.tmaps.tn/08-nearby-search/): `GET /geocoding/nearby?lat=…&lng=…&radius=…&categories=restaurant`. Radius up to 10,000 m, results sorted by distance.
+- [13 Plus Code from a map click](https://examples.tmaps.tn/13-plus-code/): `GET /geocoding/pluscode?lat=…&lng=…&zoom=18` returns `{"plus_code": "8F8GR54J+JJ", "lat": …, "lng": …}`. `zoom` sets the length: ≤14 gives 8 digits (~275 m), ≤18 gives 10 digits (~14 m), >18 gives 11 digits (~3 m); 14 characters without `zoom`. Or `zoom`, `x`, `y` of a map tile for the code of the tile center.
 
 ## Routes and travel times
 
@@ -40,4 +41,4 @@ Key facts:
 - [Authentication and authorized domains](https://www.tmaps.tn/documentation/authentication)
 - [Error codes](https://www.tmaps.tn/documentation/errors)
 - [Source code on GitHub](https://github.com/tmaps-tn/tmaps-snippets)
-- [Postman collection (public workspace)](https://www.postman.com/tmaps-tn/tmaps-api): tiles, geocoding (forward, reverse, nearby) and routing (directions, matrix, isochrone, optimized tour), with example responses and tests.
+- [Postman collection (public workspace)](https://www.postman.com/tmaps-tn/tmaps-api): tiles, geocoding (forward, reverse, nearby, Plus Codes) and routing (directions, matrix, isochrone, optimized tour), with example responses and tests.

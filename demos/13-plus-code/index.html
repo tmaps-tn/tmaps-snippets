@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Get a Plus Code from a map click | TMaps API example</title>
+  <meta name="description" content="Click a map of Tunisia to get the Plus Code of that point with the TMaps API: a short address that works in Google Maps, with its precision and cell drawn on the map. Live JavaScript example with Leaflet.">
+  <link rel="canonical" href="https://examples.tmaps.tn/13-plus-code/">
+  <meta property="og:title" content="Get a Plus Code from a map click | TMaps API example">
+  <meta property="og:description" content="Turn GPS coordinates in Tunisia into a Plus Code (Open Location Code) with the TMaps API.">
+  <meta property="og:url" content="https://examples.tmaps.tn/13-plus-code/">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="https://storage.googleapis.com/tmaps-public-assets/favico.ico?v0">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Get a Plus Code from a map click",
+    "description": "Turn GPS coordinates in Tunisia into a Plus Code (Open Location Code) with the TMaps Geocoding API, and draw the area the code covers.",
+    "url": "https://examples.tmaps.tn/13-plus-code/",
+    "inLanguage": "en",
+    "programmingLanguage": "JavaScript",
+    "about": {
+      "@type": "WebAPI",
+      "name": "TMaps Geocoding API, Plus Codes",
+      "documentation": "https://www.tmaps.tn/documentation",
+      "provider": { "@type": "Organization", "name": "TMaps", "url": "https://www.tmaps.tn" }
+    },
+    "isPartOf": { "@type": "WebSite", "name": "TMaps API Examples", "url": "https://examples.tmaps.tn/" }
+  }
+  </script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="../shared/demo.css">
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../shared/config.js"></script>
+  <script src="../shared/demo.js"></script>
+  <style>
+    .code { margin: 0 0 10px; font: 700 1.6rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .02em; word-break: break-all; }
+    .actions { margin-bottom: 12px; }
+    a.button {
+      display: inline-block; padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px;
+      font-weight: 600; text-align: center; text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <main class="demo">
+    <aside class="panel">
+      <nav class="crumbs"><a href="../">TMaps API examples</a> / 13</nav>
+      <h1>Plus Code from a map click</h1>
+      <p class="lead">Click anywhere on the map. The TMaps API turns the GPS coordinates into a Plus Code, a short address such as <code>8F8GR54J+JJ</code> that you can share, print on a delivery slip or paste into Google Maps, even where there is no street name.</p>
+
+      <div class="controls">
+        <label class="field">Precision
+          <select id="zoom">
+            <option value="14">8 digits, about 275 m (zoom=14)</option>
+            <option value="18" selected>10 digits, about 14 m (zoom=18)</option>
+            <option value="19">11 digits, about 3 m (zoom=19)</option>
+          </select>
+        </label>
+        <p class="hint">Click the map to get the Plus Code of a point. The rectangle is the area the code covers.</p>
+      </div>
+
+      <div class="output" id="output"></div>
+      <div class="error" id="error" role="alert"></div>
+
+      <details class="request" open>
+        <summary>API request</summary>
+        <pre id="request">GET https://api.tmaps.tn/geocoding/pluscode?lat=36.806500&amp;lng=10.181500&amp;zoom=18&amp;api_key=YOUR_API_KEY</pre>
+      </details>
+
+      <section class="about">
+        <h2>How it works</h2>
+        <ol>
+          <li>A click on the map gives a latitude and longitude.</li>
+          <li>The page sends <code>GET /geocoding/pluscode</code> with <code>lat</code>, <code>lng</code> and <code>zoom</code>, which sets the precision of the code.</li>
+          <li>The API returns <code>plus_code</code> with the <code>lat</code> and <code>lng</code> it encoded. The page draws the cell of the code: every point in that rectangle has the same Plus Code.</li>
+        </ol>
+        <h2>Good to know</h2>
+        <ul>
+          <li><code>zoom</code> maps to the code length: up to 14 gives 8 digits, up to 18 gives 10 digits (about 14 m, the usual precision), above 18 gives 11 digits (about 3 m). Without <code>zoom</code> the code has 14 characters.</li>
+          <li>Plus Codes are an open standard (Open Location Code): they work offline, in Google Maps and in any app that supports them, with no account.</li>
+          <li>You can also send <code>zoom</code>, <code>x</code> and <code>y</code> of a map tile instead of <code>lat</code> and <code>lng</code>: the API returns the 10 digit code of the tile center.</li>
+          <li>Reverse geocoding results also carry a <code>plus_code</code>, with a short form next to the delegation name.</li>
+          <li>Typical uses: delivery to homes with no street number, rural sites and farms, meeting points, field inspection reports.</li>
+        </ul>
+        <p class="links">
+          <a href="https://www.tmaps.tn/documentation">API documentation</a> ·
+          <a href="https://github.com/tmaps-tn/tmaps-snippets/tree/main/demos/13-plus-code">Source on GitHub</a>
+        </p>
+      </section>
+    </aside>
+    <div id="map"></div>
+  </main>
+
+  <script>
+    const API_KEY = window.TMAPS_API_KEY || 'YOUR_API_KEY';
+
+    const map = L.map('map').setView([36.8065, 10.1815], 18); // Tunis
+    L.tileLayer(`https://tiles.tmaps.tn/r-tile/{z}/{x}/{y}?api_key=${API_KEY}`, {
+      maxZoom: 18,
+      attribution: '© <a href="https://www.tmaps.tn">TMaps</a>',
+    }).addTo(map);
+
+    const clicked = L.circleMarker([0, 0], { radius: 5, color: '#5b6178' });
+    const cell = L.rectangle([[0, 0], [0, 0]], { color: '#2e47f0', weight: 2, fillOpacity: 0.15 });
+    let last = { lat: 36.8065, lng: 10.1815 };
+    let current = '';
+
+    map.on('click', (event) => lookup(event.latlng));
+    document.getElementById('zoom').addEventListener('change', () => lookup(last, { fit: true }));
+
+    async function lookup({ lat, lng }, { fit = false } = {}) {
+      last = { lat, lng };
+      clicked.setLatLng([lat, lng]).addTo(map);
+
+      const url = new URL('https://api.tmaps.tn/geocoding/pluscode');
+      url.search = new URLSearchParams({
+        lat: lat.toFixed(6),
+        lng: lng.toFixed(6),
+        zoom: document.getElementById('zoom').value,
+        api_key: API_KEY,
+      });
+      demo.showRequest('GET', url);
+      demo.clearError();
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(`${res.status}: ${data.error?.message ?? data.error ?? res.statusText}`);
+        render(data, fit);
+      } catch (error) {
+        document.getElementById('output').innerHTML = '';
+        cell.remove();
+        demo.showError(error);
+      }
+    }
+
+    function render(data, fit) {
+      current = data.plus_code;
+      const bounds = cellBounds(current);
+      cell.setBounds(bounds).addTo(map);
+      if (fit) map.fitBounds(bounds, { padding: [60, 60], maxZoom: 18 });
+
+      const [[south, west], [north, east]] = bounds;
+      const height = (north - south) * 111320;
+      const width = (east - west) * 111320 * Math.cos((south * Math.PI) / 180);
+      const digits = current.replace('+', '').replace(/0+$/, '').length;
+      const rows = [
+        ['Digits', digits],
+        ['Cell size', `${demo.formatDistance(height)} × ${demo.formatDistance(width)}`],
+        ['Coordinates', `${data.lat.toFixed(6)}, ${data.lng.toFixed(6)}`],
+      ];
+      const gmaps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(current)}`;
+      document.getElementById('output').innerHTML = `
+        <p class="code">${demo.escape(current)}</p>
+        <div class="row actions">
+          <button type="button" id="copy">Copy code</button>
+          <a class="button" href="${gmaps}" target="_blank" rel="noopener">Open in Google Maps</a>
+        </div>
+        <table>${rows.map(([k, v]) => `<tr><th>${k}</th><td>${demo.escape(v)}</td></tr>`).join('')}</table>`;
+      document.getElementById('copy').addEventListener('click', (event) => copy(event.target, current));
+    }
+
+    // Rectangle couvert par un Plus Code, calculé à partir du code lui-même.
+    // 10 premiers chiffres : paires latitude/longitude, 20° puis 1°, 0,05°, 0,0025°, 0,000125°.
+    // Chiffres suivants : la cellule est découpée en 5 lignes × 4 colonnes.
+    function cellBounds(code) {
+      const ALPHABET = '23456789CFGHJMPQRVWX';
+      const digits = code.replace('+', '').replace(/0+$/, ''); // les 0 ne sont que du remplissage
+      let south = -90, west = -180, height = 400, width = 400;
+      for (let i = 0; i < Math.min(digits.length, 10); i += 2) {
+        height /= 20;
+        width /= 20;
+        south += ALPHABET.indexOf(digits[i]) * height;
+        west += ALPHABET.indexOf(digits[i + 1]) * width;
+      }
+      for (const digit of digits.slice(10)) {
+        height /= 5;
+        width /= 4;
+        const n = ALPHABET.indexOf(digit);
+        south += Math.floor(n / 4) * height;
+        west += (n % 4) * width;
+      }
+      return [[south, west], [south + height, west + width]];
+    }
+
+    async function copy(button, text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        button.textContent = 'Copied';
+        setTimeout(() => { button.textContent = 'Copy code'; }, 1500);
+      } catch {
+        demo.showError(new Error('Copy failed: select the code and copy it manually.'));
+      }
+    }
+
+    lookup(last, { fit: true });
+  </script>
+</body>
+</html>
