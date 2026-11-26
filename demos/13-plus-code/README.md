@@ -2,7 +2,7 @@
 
 Click anywhere on the map to get the Plus Code of that point, a short address such as `8F8GR54J+JJ` that works in Google Maps. The cell the code covers is drawn on the map.
 
-**[Live demo](https://examples.tmaps.tn/13-plus-code/)** · [API documentation](https://www.tmaps.tn/documentation)
+**[Live demo](https://examples.tmaps.tn/13-plus-code/)** · [API documentation](https://www.tmaps.tn/documentation/api/plus-codes)
 
 ## API request
 
